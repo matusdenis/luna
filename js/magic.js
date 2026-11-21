@@ -22,14 +22,16 @@
     <path d="M38 6a24 24 0 1 0 16 38A20 20 0 0 1 38 6Z" fill="url(#lg)"/>
     <path d="m44 12 1.4 3.6 3.6 1.4-3.6 1.4L44 22l-1.4-3.6-3.6-1.4 3.6-1.4Z" fill="#fff6d8"/></svg>`;
 
-  const NAV = [
+  // [odkaz, názov, prepínač z nastavení]
+  const NAV_ALL = [
     ["index.html", "Domov"],
     ["index.html#pesnicky", "Pesničky"],
     ["index.html#predstavenia", "Rozprávky"],
-    ["index.html#svet", "Svet Luny"],
-    ["index.html#terminy", "Podujatia"],
-    ["obchod.html", "Obchod"]
+    ["index.html#hra", "Hraj sa", "Game"],
+    ["index.html#terminy", "Podujatia", "Events"],
+    ["obchod.html", "Obchod", "Shop"]
   ];
+  const navItems = () => NAV_ALL.filter(([, , f]) => !f || !window.LunaStore || LunaStore.util.on(f));
 
   window.LunaUI = {
     ICONS,
@@ -42,10 +44,10 @@
       el.innerHTML = `
         <a class="glitter-logo" href="index.html" aria-label="Luna – domov"><span class="glitter-text">Luna</span><i></i><i></i><i></i></a>
         <nav class="main-nav" aria-label="Hlavná navigácia">
-          ${NAV.map(([h, t]) => `<a href="${h}" class="${t === active ? "active" : ""}">${t}</a>`).join("")}
+          ${navItems().map(([h, t]) => `<a href="${h}" class="${t === active ? "active" : ""}">${t}</a>`).join("")}
         </nav>
         <div class="header-icons">${social}
-          <a class="cart-btn" href="obchod.html#kosik" aria-label="Košík">${ICONS.cart}<span class="cart-count" hidden>0</span></a>
+          ${LunaStore.util.on("Shop") ? `<a class="cart-btn" href="obchod.html#kosik" aria-label="Košík">${ICONS.cart}<span class="cart-count" hidden>0</span></a>` : ""}
           <button class="icon-btn menu-toggle" aria-label="Menu">${ICONS.menu}</button>
         </div>`;
       document.body.prepend(el);
@@ -53,6 +55,7 @@
       el.querySelectorAll(".main-nav a").forEach((a) => (a.onclick = () => document.body.classList.remove("nav-open")));
       const upd = () => {
         const n = LunaStore.cart.count(), b = el.querySelector(".cart-count");
+        if (!b) return;
         b.textContent = n; b.hidden = !n;
       };
       document.addEventListener("cart", upd); upd();
@@ -67,7 +70,7 @@
           ${s.email ? `<li><a href="mailto:${e(s.email)}">${e(s.email)}</a></li>` : ""}
           ${s.phone ? `<li><a href="tel:${e(s.phone.replace(/\s/g, ""))}">${e(s.phone)}</a></li>` : ""}
           ${s.address ? `<li>${e(s.address)}</li>` : ""}</ul></div>
-        <div><h4>MENU</h4><ul>${NAV.slice(1).map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}<li><a href="admin.html">Administrácia</a></li></ul></div>
+        <div><h4>MENU</h4><ul>${navItems().slice(1).map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}<li><a href="admin.html">Administrácia</a></li></ul></div>
       </div><p class="copyright">© ${new Date().getFullYear()} Luna · ${e(s.producer)}</p>`;
       document.body.append(f);
     },

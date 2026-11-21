@@ -7,6 +7,10 @@
   LunaUI.footer();
 
   const s = d.settings;
+  const on = LunaStore.util.on;
+  const showEvents = on("Events"), showShop = on("Shop"), showGame = on("Game");
+  if (!showEvents) document.getElementById("terminy").remove();
+  if (!showGame) document.getElementById("hra").remove();
   if (s.tagline) {
     const words = s.tagline.toUpperCase();
     document.getElementById("tagline").innerHTML =
@@ -18,7 +22,8 @@
   document.getElementById("aboutPlay").onclick = () => LunaUI.video(s.trailerUrl || (firstClip && firstClip.youtubeUrl));
 
   /* rýchle odkazy pod hero */
-  const quick = [["#pesnicky", "note", "Pesničky"], ["#predstavenia", "book", "Rozprávky"], ["#svet", "wand", "Svet Luny"], ["#terminy", "cal", "Podujatia"], ["obchod.html", "bag", "Obchod"]];
+  const quick = [["#pesnicky", "note", "Pesničky"], ["#predstavenia", "book", "Rozprávky"], showGame && ["#hra", "wand", "Hraj sa"],
+    showEvents && ["#terminy", "cal", "Podujatia"], showShop && ["obchod.html", "bag", "Obchod"]].filter(Boolean);
   document.getElementById("quickLinks").innerHTML = quick.map(([h, ic, t]) => `<a href="${h}">${I[ic]}<span>${t}</span></a>`).join("");
 
   /* karty Objav Lunin svet */
@@ -26,7 +31,9 @@
     ["#pesnicky", "card-songs", "note", "Pesničky", "Vypočuj si Lunine piesne a pozri si videoklipy"],
     ["#predstavenia", "card-tales", "book", "Rozprávky", "Rozprávkové príbehy plné fantázie"],
     ["#o-lune", "card-world", "wand", "Svet Luny", "Magické miesta, postavy a tajomstvá"],
-    ["#terminy", "card-shows", "cal", "Podujatia", "Kde sa s Lunou môžeš stretnúť naživo"]
+    showEvents ? ["#terminy", "card-shows", "cal", "Podujatia", "Kde sa s Lunou môžeš stretnúť naživo"]
+      : showGame ? ["#hra", "card-shows", "wand", "Hraj sa s Lunou", "Klikaj na čarovné veci a rozhýb celé nebo"]
+      : ["#novinky", "card-shows", "cal", "Novinky", "Čo nové sa deje v Luninom svete"]
   ];
   document.getElementById("worldCards").innerHTML = cards.map(([h, img, ic, t, p], i) => `
     <a class="world-card reveal d${i}" href="${h}">
@@ -37,12 +44,14 @@
 
   /* ---------- TERMÍNY ---------- */
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const upcoming = d.events
+  const upcoming = !showEvents ? [] : d.events
     .filter((e) => new Date(e.date + "T00:00") >= today)
     .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
   const fCity = document.getElementById("fCity"), fShow = document.getElementById("fShow");
-  [...new Set(upcoming.map((e) => e.city))].sort().forEach((c) => fCity.add(new Option(c, c)));
-  [...new Set(upcoming.map((e) => e.show))].sort().forEach((c) => fShow.add(new Option(c, c)));
+  if (showEvents) {
+    [...new Set(upcoming.map((e) => e.city))].sort().forEach((c) => fCity.add(new Option(c, c)));
+    [...new Set(upcoming.map((e) => e.show))].sort().forEach((c) => fShow.add(new Option(c, c)));
+  }
   const STATUS = { predaj: "V predaji", vypredane: "Vypredané", coskoro: "Čoskoro" };
   function renderEvents() {
     const rows = upcoming.filter((e) => (!fCity.value || e.city === fCity.value) && (!fShow.value || e.show === fShow.value));
@@ -64,8 +73,7 @@
         <td class="c-btn">${btn}</td></tr>`;
     }).join("");
   }
-  fCity.onchange = fShow.onchange = renderEvents;
-  renderEvents();
+  if (showEvents) { fCity.onchange = fShow.onchange = renderEvents; renderEvents(); }
 
   /* ---------- PESNIČKY ---------- */
   const albumName = (id) => (d.albums.find((a) => a.id === id) || {}).title || "";
@@ -84,7 +92,7 @@
 
   document.getElementById("albumList").innerHTML = d.albums.map((a) => {
     const n = d.songs.filter((x) => x.albumId === a.id).length;
-    const prod = a.buyProductId && d.products.find((p) => p.id === a.buyProductId && p.active !== false);
+    const prod = showShop && a.buyProductId && d.products.find((p) => p.id === a.buyProductId && p.active !== false);
     return `<div class="album">
       <div class="cover"><img src="${esc(a.cover || "img/card-songs.jpg")}" alt="Album ${esc(a.title)}" loading="lazy"></div>
       <div><h4>${esc(a.title)}</h4><p>${esc([a.year, n ? n + " pesničiek" : "", a.description].filter(Boolean).join(" · "))}</p>
@@ -109,7 +117,8 @@
   }).join("");
 
   /* ---------- NOVINKY ---------- */
-  document.getElementById("newsList").innerHTML = d.news.map((n, i) => `
+  const newsOk = (n) => showShop || !/obchod\.html/.test(n.link || "");
+  document.getElementById("newsList").innerHTML = d.news.filter(newsOk).map((n, i) => `
     <a class="news-item reveal d${i % 3}" href="${esc(LunaStore.util.safeUrl(n.link) || "#")}">
       <div class="img"><img src="${esc(n.image)}" alt="" loading="lazy"></div>
       <h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></a>`).join("");
@@ -148,7 +157,7 @@
   /* plávajúce mesiačiky, hviezdy a obláčiky: [trieda, left%, top%, speed, rotácia, posun do strany] */
   LunaUI.decorate($("#o-lune"), [["moon", 2, 8, .45, .04], ["star", 46, 12, .3], ["star s", 93, 20, .6], ["star s", 40, 85, .2], ["cloud", 72, 70, .25, 0, .15]]);
   LunaUI.decorate($("#svet"), [["star", 4, 12, .5], ["star s", 94, 30, .25], ["cloud", -6, 60, .3, 0, -.2], ["star s", 60, 6, .7]]);
-  LunaUI.decorate($("#terminy"), [["moon", 90, 2, .55, -.05], ["star", 6, 30, .35], ["star s", 12, 80, .6], ["cloud", 70, 78, .2, 0, .25]]);
+  if (showEvents) LunaUI.decorate($("#terminy"), [["moon", 90, 2, .55, -.05], ["star", 6, 30, .35], ["star s", 12, 80, .6], ["cloud", 70, 78, .2, 0, .25]]);
   LunaUI.decorate($("#pesnicky"), [["star", 92, 10, .4], ["star s", 3, 50, .55], ["cloud", 60, -5, .3, 0, -.15]]);
   LunaUI.decorate($("#predstavenia"), [["moon", 93, 6, .4, .05], ["star s", 4, 20, .5], ["cloud", -8, 70, .25, 0, .2]]);
   LunaUI.decorate($("#novinky"), [["star", 8, 10, .45], ["star s", 90, 40, .3]]);
@@ -157,6 +166,7 @@
   LunaUI.mist($("#novinky"), "bottom", .25);
   LunaUI.parallax && LunaUI.parallax();
 
+  if (showGame && window.LunaGame) LunaGame.init(document.getElementById("hra"));
   LunaFX.init();
   LunaUI.reveal();
   if (location.hash) document.querySelector(location.hash)?.scrollIntoView();

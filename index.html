@@ -13,6 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Great+Vibes&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/luna.css">
   <link rel="stylesheet" href="css/cinema.css">
+  <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
   <canvas id="sky" aria-hidden="true"></canvas>
@@ -95,8 +96,17 @@
       </div>
     </section>
 
+    <!-- HRA -->
+    <section class="section night-band" id="hra">
+      <div class="section-inner">
+        <h2 class="section-title reveal"><span class="twinkle">★</span>Rozhýb Lunin svet<span class="twinkle">★</span></h2>
+        <p class="lead reveal">Klikaj na čarovné veci na nočnej oblohe a pozri sa, čo urobia. Nájdeš všetkých osem?</p>
+        <div class="game reveal" id="game"></div>
+      </div>
+    </section>
+
     <!-- NOVINKY -->
-    <section class="section paper" id="novinky" style="padding-top:20px">
+    <section class="section paper" id="novinky">
       <div class="section-inner">
         <h2 class="section-title reveal"><span class="twinkle">★</span>Novinky zo sveta Luny<span class="twinkle">★</span></h2>
         <div class="news" id="newsList"></div>
@@ -121,6 +131,7 @@
   <script src="js/store.js"></script>
   <script src="js/magic.js"></script>
   <script src="js/cinema.js"></script>
+  <script src="js/game.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>

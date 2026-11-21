@@ -31,7 +31,11 @@
       spotify: "",
       shopEmail: "divadlooskar@gmail.com",
       shippingPrice: 3.9,
-      freeShippingFrom: 40
+      freeShippingFrom: 40,
+      // prepínače sekcií webu (Admin → Nastavenia)
+      showEvents: true,
+      showShop: true,
+      showGame: true
     },
     events: [
       { id: "e1", date: "2026-12-06", time: "10:00", show: "Luna a Mikulášska hviezda", city: "Bratislava", venue: "Dom kultúry Ružinov", ticketUrl: "", status: "predaj" },
@@ -218,6 +222,8 @@
       const m = String(url).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
       return m ? m[1] : "";
     },
+    // je sekcia zapnutá? (chýbajúce nastavenie = zapnutá)
+    on(name) { return !data || !data.settings || data.settings["show" + name] !== false; },
     safeUrl(u) { return /^(https?:|mailto:|tel:|#|img\/|[\w-]+\.html)/i.test(String(u || "")) ? u : ""; }
   };
 

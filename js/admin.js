@@ -239,18 +239,30 @@
 
   /* ---------------- NASTAVENIA ---------------- */
   function settingsView(m, note) {
+    const SW = [["showEvents", "Podujatia (termíny koncertov a predstavení)"], ["showShop", "Obchod (merch, košík)"], ["showGame", "Hra s Lunou"]];
     const F = [["tagline", "Podnadpis (hero)", "text", { full: true }], ["about", "Kto je Luna? (text)", "textarea", { full: true }],
       ["trailerUrl", "Video ukážka (YouTube)", "url", { full: true, hint: "Tlačidlo „Pozri si ukážku“. Ak je prázdne, použije sa prvý klip." }],
       ["producer", "Producent", "text"], ["producerUrl", "Web producenta", "url"], ["email", "Kontaktný e-mail", "email"], ["phone", "Telefón", "text"],
       ["address", "Adresa", "text", { full: true }], ["youtube", "YouTube kanál", "url"], ["spotify", "Spotify", "url"], ["instagram", "Instagram", "url"], ["facebook", "Facebook", "url"],
       ["shopEmail", "E-mail pre objednávky", "email"], ["shippingPrice", "Cena dopravy (€)", "number", { step: "0.01" }], ["freeShippingFrom", "Doprava zdarma od (€)", "number", { step: "0.01" }]];
-    m.innerHTML = `${note}<h1>Nastavenia</h1><form class="card" id="sf"><div class="form">${F.map((f) => fieldHtml(f, data.settings[f[0]])).join("")}</div>
+    m.innerHTML = `${note}<h1>Nastavenia</h1><form class="card" id="sf">
+      <h2 style="margin:0 0 4px;font-size:18px">Sekcie webu</h2>
+      <p class="hint" style="margin:0 0 12px;font-size:13px;color:var(--ink-soft)">Vypnutá sekcia zmizne z webu aj z menu. Obsah ostane uložený a môžeš ju kedykoľvek znova zapnúť.</p>
+      <div class="switches">${SW.map(([n, t]) => `<label class="switch"><input type="checkbox" name="${n}" ${data.settings[n] !== false ? "checked" : ""}><span class="track"><span class="knob"></span></span><span class="sw-label">${t}</span><span class="sw-state"></span></label>`).join("")}</div>
+      <hr style="border:0;border-top:1px solid #eceef6;margin:20px 0">
+      <div class="form">${F.map((f) => fieldHtml(f, data.settings[f[0]])).join("")}</div>
       <div class="bar" style="margin:18px 0 0"><button class="a-btn pri">Použiť</button></div></form>`;
     m.querySelector("#sf").onsubmit = (e) => {
       e.preventDefault();
       F.forEach(([n, , t]) => { const v = e.target.elements[n].value.trim(); data.settings[n] = t === "number" ? Number(v || 0) : v; });
+      SW.forEach(([n]) => { data.settings[n] = e.target.elements[n].checked; });
       setDirty(true); LunaUI.toast("Nastavenia pripravené – nezabudni Uložiť zmeny");
     };
+    // prepínače platia hneď po kliknutí
+    SW.forEach(([n]) => (m.querySelector(`input[name="${n}"]`).onchange = (e) => {
+      data.settings[n] = e.target.checked; setDirty(true);
+      LunaUI.toast(e.target.checked ? "Sekcia zapnutá – klikni Uložiť zmeny na web" : "Sekcia vypnutá – klikni Uložiť zmeny na web");
+    }));
   }
 
   function backupView(m) {

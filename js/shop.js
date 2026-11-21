@@ -6,6 +6,15 @@
   LunaUI.header("Obchod");
   LunaUI.footer();
 
+  // obchod je v admine vypnutý → len oznam
+  if (!LunaStore.util.on("Shop")) {
+    document.querySelector(".shop-layout").innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px 16px 80px">
+      <p style="font-size:20px">Lunin obchod sa ešte len pripravuje. Čoskoro tu nájdeš čarovné darčeky ✨</p>
+      <a class="btn btn-gold" href="index.html">Späť domov ›</a></div>`;
+    LunaFX.init(); LunaUI.reveal();
+    return;
+  }
+
   const products = d.products.filter((p) => p.active !== false);
   const cats = ["Všetko", ...new Set(products.map((p) => p.category).filter(Boolean))];
   let cat = "Všetko";
