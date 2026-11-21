@@ -42,7 +42,7 @@
       const el = document.createElement("header");
       el.className = "site-header";
       el.innerHTML = `
-        <a class="glitter-logo" href="index.html" aria-label="Luna – domov"><span class="glitter-text">Luna</span><i></i><i></i><i></i></a>
+        <a class="glitter-logo" href="index.html" aria-label="Luna – domov"><span class="glitter-text">Luna</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i></a>
         <nav class="main-nav" aria-label="Hlavná navigácia">
           ${navItems().map(([h, t]) => `<a href="${h}" class="${t === active ? "active" : ""}">${t}</a>`).join("")}
         </nav>
@@ -65,7 +65,7 @@
       const f = document.createElement("footer");
       f.className = "site-footer";
       f.innerHTML = `<div class="footer-grid">
-        <div><a class="glitter-logo" href="index.html" aria-label="Luna"><span class="glitter-text">Luna</span><i></i><i></i><i></i></a><p>${e(s.tagline)}.</p><p>Produkcia: <a href="${e(s.producerUrl)}" target="_blank" rel="noopener">${e(s.producer)}</a></p></div>
+        <div><a class="glitter-logo" href="index.html" aria-label="Luna"><span class="glitter-text">Luna</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i></a><p>${e(s.tagline)}.</p><p>Produkcia: <a href="${e(s.producerUrl)}" target="_blank" rel="noopener">${e(s.producer)}</a></p></div>
         <div><h4>KONTAKT</h4><ul>
           ${s.email ? `<li><a href="mailto:${e(s.email)}">${e(s.email)}</a></li>` : ""}
           ${s.phone ? `<li><a href="tel:${e(s.phone.replace(/\s/g, ""))}">${e(s.phone)}</a></li>` : ""}
@@ -231,7 +231,7 @@
     /* veľké logo, ktoré sa zjaví z výbuchu a odletí do hlavičky */
     const big = document.createElement("div");
     big.className = "intro-logo glitter-logo"; big.setAttribute("aria-hidden", "true");
-    big.innerHTML = `<span class="glitter-text">Luna</span><i></i><i></i><i></i>`;
+    big.innerHTML = `<span class="glitter-text">Luna</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i>`;
     document.body.append(big);
     function showLogo() {
       big.style.left = bx + "px"; big.style.top = by + "px";
