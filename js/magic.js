@@ -199,7 +199,7 @@
     let bx = innerWidth / 2, by = innerHeight / 2; // miesto výbuchu
 
     let mode = short ? "swirl" : "wait"; // wait → video | swirl (náhradný vír prachu)
-    const GATHER = short ? 650 : 1500;
+    const GATHER = short ? 900 : 2200;
     let swirlStart = performance.now();
     if (video) {
       video.playbackRate = 1.15;
@@ -233,7 +233,7 @@
     function showLogo() {
       big.style.left = bx + "px"; big.style.top = by + "px";
       big.classList.add("show");
-      setTimeout(flyLogo, 1700);
+      setTimeout(flyLogo, 2000);
     }
     function flyLogo() {
       lift();
@@ -263,11 +263,11 @@
       boomAt = t;
       if (mode === "video") { bx = ringX; by = ringY; video.classList.add("out"); }
       const x = bx * dpr, y = by * dpr;
-      explode(x, y, short ? 650 : 1300, 26, 34);
-      rings.push({ x, y, r: 0, v: 22 * S, life: 1, w: 10 * S });
-      rings.push({ x, y, r: 0, v: 14 * S, life: 1, w: 3 * S });
-      const n = short ? 3 : 6;
-      for (let i = 0; i < n; i++) bursts.push({ at: t + 250 + i * rnd(160, 260), x: rnd(.12, .88) * W, y: rnd(.12, .7) * H });
+      // jemné rozvinutie trblietok namiesto prudkého výbuchu
+      explode(x, y, short ? 320 : 600, 12, 0);
+      rings.push({ x, y, r: 0, v: 8 * S, life: 1, w: 2 * S });
+      const n = short ? 1 : 2;
+      for (let i = 0; i < n; i++) bursts.push({ at: t + 500 + i * rnd(400, 600), x: rnd(.12, .88) * W, y: rnd(.12, .7) * H });
       for (let i = 0; i < (short ? 150 : 320); i++) rain.push({ x: rnd(0, W), y: rnd(-H * .6, H * .2), vy: rnd(.8, 2.6) * S, sway: rnd(0, 6.28), r: rnd(.6, 1.8) * S, h: hue(), life: 1, delay: rnd(200, 900) });
       root.style.setProperty("--ix", bx + "px"); root.style.setProperty("--iy", by + "px");
       showLogo(); // stránka sa otvorí, až keď logo odletí do hlavičky
@@ -301,25 +301,25 @@
             if (p.px) { ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(x, y); ctx.stroke(); }
             p.px = x; p.py = y;
           }
-          const cr = Math.max(1, (20 + 120 * k * k) * S * (1 + Math.sin(t / 55) * .15 * k));
+          const cr = Math.max(1, (20 + 70 * k * k) * S * (1 + Math.sin(t / 55) * .15 * k));
           const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
-          g.addColorStop(0, `rgba(255,255,245,${.9 * k})`); g.addColorStop(.25, `rgba(255,226,150,${.7 * k})`); g.addColorStop(1, "rgba(255,170,60,0)");
+          g.addColorStop(0, `rgba(255,255,245,${.6 * k})`); g.addColorStop(.25, `rgba(255,226,150,${.45 * k})`); g.addColorStop(1, "rgba(255,170,60,0)");
           ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 7); ctx.fill();
           if (k >= 1) boom(now);
         }
       } else {
         const since = now - boomAt, cx = bx * dpr, cy = by * dpr;
-        const flash = Math.max(0, 1 - since / 380);
+        const fk = Math.max(0, 1 - since / 1100), flash = .3 * fk * fk;
         if (flash > 0) {
           const fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.2);
           fg.addColorStop(0, `rgba(255,250,235,${flash})`); fg.addColorStop(.4, `rgba(255,225,160,${flash * .7})`); fg.addColorStop(1, `rgba(255,200,120,${flash * .15})`);
           ctx.fillStyle = fg; ctx.fillRect(0, 0, W, H);
         }
-        while (bursts.length && bursts[0].at <= now) { const b = bursts.shift(); explode(b.x, b.y, short ? 120 : 200, 11, 9); }
+        while (bursts.length && bursts[0].at <= now) { const b = bursts.shift(); explode(b.x, b.y, short ? 50 : 80, 6, 0); }
         rings = rings.filter((g) => g.life > 0);
         for (const g of rings) {
-          g.r += g.v * dt; g.v *= .97; g.life -= .018 * dt;
-          ctx.strokeStyle = `rgba(255,228,160,${g.life * .8})`; ctx.lineWidth = g.w * g.life;
+          g.r += g.v * dt; g.v *= .975; g.life -= .012 * dt;
+          ctx.strokeStyle = `rgba(255,228,160,${g.life * .35})`; ctx.lineWidth = g.w * g.life;
           ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, 7); ctx.stroke();
         }
         sparks = sparks.filter((p) => p.life > 0);

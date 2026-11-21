@@ -472,7 +472,7 @@ table.events { width: 100%; border-collapse: collapse; font-size: 16px; }
 
 /* úvodné zjavenie stránky */
 html.veiled main, html.veiled .site-header, html.veiled .site-footer {
-  opacity: 0; filter: blur(18px) brightness(1.8); scale: 1.04;
+  opacity: 0; filter: blur(10px) brightness(1.2); scale: 1.02;
 }
 main, .site-header, .site-footer { transition: opacity 1.8s ease, filter 2.2s ease, scale 2.4s cubic-bezier(.2, .8, .2, 1); }
 #intro { position: fixed; inset: 0; z-index: 500; pointer-events: auto; cursor: pointer; }
@@ -550,7 +550,7 @@ main, .site-header, .site-footer { transition: opacity 1.8s ease, filter 2.2s ea
 }
 
 /* kruhová clona: stránka sa otvorí z bodu výbuchu */
-html.iris main, html.iris .site-header { animation: irisOpen 1.6s cubic-bezier(.3, .7, .2, 1) both; }
+html.iris main, html.iris .site-header { animation: irisOpen 2.2s cubic-bezier(.3, .7, .2, 1) both; }
 @keyframes irisOpen { from { clip-path: circle(0% at var(--ix, 50%) var(--iy, 50vh)); } to { clip-path: circle(150% at var(--ix, 50%) var(--iy, 50vh)); } }
 
 /* video s kométou z trblietok (čierne pozadie sa „odfiltruje“ režimom screen) */
@@ -560,8 +560,8 @@ html.iris main, html.iris .site-header { animation: irisOpen 1.6s cubic-bezier(.
 /* veľké logo z výbuchu, ktoré odletí do hlavičky */
 .intro-logo, .intro-logo.glitter-logo {
   position: fixed; z-index: 600; left: 50%; top: 50%; pointer-events: none;
-  transform: translate(-50%, -50%) scale(.3); opacity: 0; filter: blur(18px) brightness(2.2);
-  transition: opacity .7s ease, transform 1.2s cubic-bezier(.2, .9, .25, 1.15), filter 1s ease;
+  transform: translate(-50%, -50%) scale(.85); opacity: 0; filter: blur(10px) brightness(1.3);
+  transition: opacity 1.4s ease, transform 1.8s cubic-bezier(.25, .8, .3, 1), filter 1.4s ease;
 }
 .intro-logo .glitter-text { font-size: clamp(110px, 19vw, 300px); background-size: 300% 100%, 140px 140px; }
 .intro-logo.show { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: none; }
