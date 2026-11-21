@@ -4,7 +4,8 @@
 
 /* --- nadpisy: písmená sa rozžiaria jedno po druhom --- */
 .section-title.reveal { filter: none !important; scale: 1 !important; opacity: 1 !important; }
-.ch { display: inline-block; opacity: 0; will-change: transform, opacity, filter; }
+/* padding + záporný margin: box písmena pokryje aj ozdobné ťahy písma (Safari ich inak pri filtri oreže) */
+.ch { display: inline-block; opacity: 0; padding: .2em .35em; margin: -.2em -.35em; }
 .in .ch, .ch-in .ch { animation: chIn 1.2s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 55ms + .15s); }
 @keyframes chIn {
   0% { opacity: 0; filter: blur(12px); transform: translateY(.45em) scale(1.5) rotate(-8deg); text-shadow: 0 0 0 transparent; }
