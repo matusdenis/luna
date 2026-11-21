@@ -99,9 +99,13 @@
     <!-- HRA -->
     <section class="section night-band" id="hra">
       <div class="section-inner">
-        <h2 class="section-title reveal"><span class="twinkle">★</span>Rozhýb Lunin svet<span class="twinkle">★</span></h2>
-        <p class="lead reveal">Klikaj na čarovné veci na nočnej oblohe a pozri sa, čo urobia. Nájdeš všetkých osem?</p>
-        <div class="game reveal" id="game"></div>
+        <h2 class="section-title reveal"><span class="twinkle">★</span>Hraj sa s Lunou<span class="twinkle">★</span></h2>
+        <div class="game-tabs reveal" role="tablist">
+          <button class="game-tab on" data-tab="game" role="tab" aria-selected="true">✨ Čarovné nebo</button>
+          <button class="game-tab" data-tab="piano" role="tab" aria-selected="false">🎹 Lunin klavír</button>
+        </div>
+        <div class="game-panel game" id="game" role="tabpanel"></div>
+        <div class="game-panel piano" id="piano" role="tabpanel" hidden></div>
       </div>
     </section>
 
@@ -132,6 +136,7 @@
   <script src="js/magic.js"></script>
   <script src="js/cinema.js"></script>
   <script src="js/game.js"></script>
+  <script src="js/piano.js"></script>
   <script src="js/home.js"></script>
 </body>
 </html>

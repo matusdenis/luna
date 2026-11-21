@@ -177,3 +177,82 @@
   .g-stars i { width: 15px; height: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { .g-obj { animation: none; } }
+
+/* ============================================================
+   Záložky hier + Lunin klavír
+   ============================================================ */
+.game-tabs { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 0 auto 22px; }
+.game-tab {
+  padding: 10px 22px; border-radius: 999px; border: 1.5px solid rgba(246, 198, 106, .55); background: rgba(8, 16, 52, .6);
+  color: var(--white, #fff); font: 600 16px var(--f-body); transition: background .3s, color .3s, transform .3s;
+}
+.game-tab:hover { transform: translateY(-2px); }
+.game-tab.on { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.game-panel[hidden] { display: none !important; }
+
+.piano { max-width: 980px; margin: 0 auto; }
+.p-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.p-songs { display: flex; gap: 8px; flex-wrap: wrap; }
+.p-song { padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(246, 198, 106, .45); background: rgba(8, 16, 52, .55); color: #fff; font: 15px var(--f-body); }
+.p-song.on { background: rgba(246, 198, 106, .9); color: var(--ink); }
+
+.p-stage {
+  position: relative; height: 170px; border-radius: 24px 24px 0 0; overflow: hidden;
+  background: radial-gradient(ellipse at 70% 0%, #3a2d86, transparent 60%), linear-gradient(180deg, #0b1650, #1b2a78);
+  border: 1.5px solid rgba(246, 198, 106, .45); border-bottom: 0;
+}
+.p-luna { position: absolute; left: 16px; top: 16px; width: 74px; height: 74px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gold); box-shadow: 0 0 20px rgba(246, 198, 106, .5); background: #0b1a4a; }
+.piano.cheer .p-luna { animation: gTalk .6s ease-in-out 2; }
+.p-msg { position: absolute; left: 104px; right: 16px; top: 18px; background: var(--cream); color: var(--ink); border-radius: 16px 16px 16px 4px; padding: 10px 14px; font-size: 15px; line-height: 1.4; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); max-width: 560px; }
+.p-msg.pop { animation: pPop .35s cubic-bezier(.3, 1.5, .5, 1); }
+@keyframes pPop { from { transform: scale(.94); opacity: .4; } }
+.p-track { position: absolute; left: 16px; right: 16px; bottom: 12px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 4px 2px; }
+.p-track::-webkit-scrollbar { display: none; }
+.p-track i {
+  flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 700 13px var(--f-body); font-style: normal;
+  background: color-mix(in srgb, var(--c) 35%, transparent); color: #fff; border: 2px solid var(--c); opacity: .75; transition: transform .25s, opacity .25s;
+}
+.p-track i.done { background: var(--c); color: var(--ink); opacity: .45; }
+.p-track i.now { background: var(--c); color: var(--ink); opacity: 1; transform: scale(1.25); box-shadow: 0 0 14px var(--c); }
+.p-fly { position: absolute; inset: 0; pointer-events: none; }
+.p-note { position: absolute; bottom: -10px; font-size: 26px; text-shadow: 0 0 10px currentColor; animation: pFly 1.5s ease-out forwards; }
+@keyframes pFly { from { transform: translate(-50%, 0) scale(.6); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), -150px) rotate(var(--r)) scale(1.2); opacity: 0; } }
+
+.p-keys {
+  position: relative; display: flex; height: clamp(170px, 26vw, 250px); padding: 0 10px 12px; gap: 4px;
+  background: linear-gradient(180deg, #2a1d5a, #1a1240); border: 1.5px solid rgba(246, 198, 106, .45); border-top: 4px solid var(--gold-deep);
+  border-radius: 0 0 24px 24px; touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.p-w {
+  flex: 1; position: relative; border: 0; padding: 0 0 12px; border-radius: 0 0 12px 12px; cursor: pointer;
+  background: linear-gradient(180deg, #fffdf6 70%, color-mix(in srgb, var(--c) 30%, #fff)); box-shadow: inset 0 -8px 0 var(--c), 0 4px 0 rgba(0, 0, 0, .35);
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px;
+  transition: transform .08s, box-shadow .08s, background .15s; -webkit-tap-highlight-color: transparent;
+}
+.p-w .p-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px rgba(255, 255, 255, .8); }
+.p-w .p-name { font: 700 15px var(--f-body); color: var(--ink); }
+.p-w.down { transform: translateY(3px); box-shadow: inset 0 -4px 0 var(--c), 0 1px 0 rgba(0, 0, 0, .35); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 45%, #fff), var(--c)); }
+.p-w.next { animation: pNext 1s ease-in-out infinite; }
+@keyframes pNext { 50% { background: linear-gradient(180deg, color-mix(in srgb, var(--c) 55%, #fff), var(--c)); box-shadow: inset 0 -8px 0 var(--c), 0 0 22px var(--c), 0 4px 0 rgba(0, 0, 0, .35); } }
+.p-w.wiggle { animation: pWiggle .45s ease-in-out; }
+@keyframes pWiggle { 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+.p-b {
+  position: absolute; top: 0; z-index: 2; width: calc((100% - 20px) / 10 * .6); height: 58%;
+  left: calc(10px + (100% - 20px) / 10 * var(--at) - (100% - 20px) / 10 * .3);
+  border: 0; border-radius: 0 0 8px 8px; cursor: pointer; background: linear-gradient(180deg, #2c2a55, #0d0b25);
+  box-shadow: inset 0 -6px 0 #4b3f8f, 0 4px 6px rgba(0, 0, 0, .5); transition: transform .08s; -webkit-tap-highlight-color: transparent;
+}
+.p-b.down { transform: translateY(2px); background: linear-gradient(180deg, #5b4fb5, #2a1f6a); box-shadow: inset 0 -3px 0 #ffe7a8, 0 0 16px rgba(255, 231, 168, .6); }
+.piano.demo .p-keys { pointer-events: none; }
+.p-tip { text-align: center; font-size: 13px; opacity: .7; margin: 12px 0 0; }
+.p-tip kbd { display: inline-block; min-width: 20px; padding: 1px 5px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, .35); font: 12px var(--f-body); }
+@media (max-width: 700px) {
+  .p-stage { height: 190px; }
+  .p-luna { width: 56px; height: 56px; left: 10px; top: 12px; }
+  .p-msg { left: 76px; right: 10px; top: 12px; font-size: 14px; }
+  .p-keys { padding: 0 6px 10px; gap: 3px; height: 200px; }
+  .p-b { width: calc((100% - 12px) / 10 * .62); left: calc(6px + (100% - 12px) / 10 * var(--at) - (100% - 12px) / 10 * .31); }
+  .p-w .p-name { font-size: 13px; }
+  .p-w .p-dot { width: 12px; height: 12px; }
+  .p-tip { display: none; }
+}

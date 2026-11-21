@@ -166,7 +166,7 @@
   LunaUI.mist($("#novinky"), "bottom", .25);
   LunaUI.parallax && LunaUI.parallax();
 
-  if (showGame && window.LunaGame) LunaGame.init(document.getElementById("hra"));
+  if (showGame && window.LunaGames) LunaGames.init(document.getElementById("hra"));
   LunaFX.init();
   LunaUI.reveal();
   if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
