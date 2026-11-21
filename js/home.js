@@ -130,7 +130,7 @@
   const $ = (q) => document.querySelector(q), $$ = (q) => document.querySelectorAll(q);
   const sp = (el, speed, rot) => { if (!el) return; el.dataset.speed = speed; if (rot) el.dataset.rot = rot; };
   if (matchMedia("(min-width: 861px)").matches) {
-    sp($(".hero-bg"), .35);
+    sp($(".hero-bg"), .08); // malá rýchlosť, aby fotka nemusela byť zväčšená
     sp($(".hero-text"), -.18);
     sp($(".quick-links"), -.06);
   // obsah sa hýbe len na väčších obrazovkách (na mobile len dekorácie)

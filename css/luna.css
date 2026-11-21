@@ -137,10 +137,11 @@ button { font-family: inherit; cursor: pointer; }
   height: min(100vh, 56.3vw + 120px); min-height: 560px;
 }
 .hero-bg {
-  position: absolute; inset: -90px 0; background: url(../img/luna-hero.jpg) center 30%/cover no-repeat;
-  animation: kenburns 24s ease-in-out infinite alternate; transform-origin: 30% 40%;
+  position: absolute; inset: -50px 0 0; background: url(../img/luna-hero.jpg) center 30%/cover no-repeat;
+  animation: kenburns-hero 24s ease-in-out infinite alternate; transform-origin: 30% 40%;
 }
 @keyframes kenburns { to { transform: scale(1.07) translate(-1%, 1%); } }
+@keyframes kenburns-hero { to { transform: scale(1.025); } }
 .hero::after { /* jemné stmavenie dole, plynulý prechod do stránky */
   content: ""; position: absolute; inset: auto 0 0; height: 45%; pointer-events: none; z-index: 1;
   background: linear-gradient(to bottom, transparent, rgba(5, 11, 38, .55) 60%, rgba(5, 11, 38, .85));
@@ -191,7 +192,7 @@ button { font-family: inherit; cursor: pointer; }
 
 @media (max-width: 860px) {
   .hero { height: auto; min-height: 0; padding-top: 64px; margin-top: -64px; }
-  .hero-bg { position: relative; aspect-ratio: 1672/941; background-position: center; }
+  .hero-bg { position: relative; inset: -90px 0; aspect-ratio: 1672/941; background-position: center; }
   .hero::after { display: none; }
   .hero-text { position: relative; inset: auto; width: auto; padding: 22px 16px 10px; }
   .quick-links { position: relative; bottom: auto; padding: 16px 16px 50px; gap: 18px 26px; }
