@@ -1,0 +1,112 @@
+/* ============================================================
+   Filmové efekty – ako pri projekcii na plátno
+   ============================================================ */
+
+/* --- nadpisy: písmená sa rozžiaria jedno po druhom --- */
+.section-title.reveal { filter: none !important; scale: 1 !important; opacity: 1 !important; }
+.ch { display: inline-block; opacity: 0; will-change: transform, opacity, filter; }
+.in .ch, .ch-in .ch { animation: chIn 1.2s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 55ms + .15s); }
+@keyframes chIn {
+  0% { opacity: 0; filter: blur(12px); transform: translateY(.45em) scale(1.5) rotate(-8deg); text-shadow: 0 0 0 transparent; }
+  55% { opacity: 1; filter: blur(0); text-shadow: 0 0 22px #ffd98a, 0 0 8px #fff6dc; }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+.section-title .twinkle { opacity: 0; transition: opacity 1s 1s; }
+.section-title.in .twinkle { opacity: 1; }
+
+/* --- lúče svetla z mesiaca v hero --- */
+.hero-rays {
+  position: absolute; z-index: 1; pointer-events: none; width: 220vmax; height: 220vmax;
+  left: calc(13% - 110vmax); top: calc(38% - 110vmax);
+  background: repeating-conic-gradient(from 0deg, rgba(255, 225, 160, .13) 0 4deg, transparent 4deg 13deg, rgba(255, 210, 140, .07) 13deg 15deg, transparent 15deg 24deg);
+  -webkit-mask-image: radial-gradient(circle, #000 2%, rgba(0, 0, 0, .5) 14%, transparent 34%);
+  mask-image: radial-gradient(circle, #000 2%, rgba(0, 0, 0, .5) 14%, transparent 34%);
+  mix-blend-mode: screen; animation: rays 90s linear infinite; opacity: .85;
+}
+@keyframes rays { to { transform: rotate(360deg); } }
+.hero-glow {
+  position: absolute; z-index: 1; pointer-events: none; left: 2%; top: 10%; width: 32%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 220, 150, .35), transparent 65%); mix-blend-mode: screen;
+  animation: breathe 5s ease-in-out infinite;
+}
+@keyframes breathe { 50% { opacity: .45; transform: scale(1.12); } }
+#heroFx { position: absolute; inset: 0; z-index: 2; pointer-events: none; width: 100%; height: 100%; }
+@media (max-width: 860px) { .hero-rays { top: calc(20% - 110vmax); } .hero-glow { top: 64px; width: 45%; } }
+
+/* --- zlatý lesk, ktorý prebehne cez kartu --- */
+.sweep {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 236, 190, .0) 38%, rgba(255, 240, 200, .6) 50%, rgba(255, 236, 190, 0) 62%, transparent 70%);
+  transform: translateX(-130%); mix-blend-mode: screen;
+}
+.in .sweep, .in > .sweep { animation: sweep 1.6s .6s cubic-bezier(.4, 0, .2, 1) both; }
+.sweep-host:hover .sweep { animation: sweep2 1s cubic-bezier(.4, 0, .2, 1) both; }
+@keyframes sweep { to { transform: translateX(130%); } }
+@keyframes sweep2 { from { transform: translateX(-130%); } to { transform: translateX(130%); } }
+.show-card, .table-wrap, .album, .product { position: relative; }
+
+/* --- 3D natočenie kariet --- */
+.tilt { transform-style: preserve-3d; transition: transform .25s ease-out, box-shadow .4s; }
+.tilt.tilting { transition: transform .08s linear, box-shadow .4s; }
+.tilt .glare {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; border-radius: inherit; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 245, 215, .35), transparent 55%);
+  mix-blend-mode: screen;
+}
+.tilt.tilting .glare { opacity: 1; }
+
+/* --- hero obsah sa zjaví ako titulok na plátne --- */
+.hero-text.reveal { filter: blur(20px) brightness(2); }
+.hero-text.reveal.in { filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ch { opacity: 1; } .hero-rays, #heroFx, .sweep { display: none; }
+}
+
+/* ============================================================
+   LOGO – písmo webu (Great Vibes) v štýle ručného trblietavého nápisu:
+   zlaté trblietky, rozsypané zrnká a jemná žiara
+   (tyrkysová verzia: zameň glitter-zlate.png za glitter-tyrkys.png a farbu žiary)
+   ============================================================ */
+.glitter-logo { position: relative; display: inline-block; line-height: 1; text-decoration: none; }
+.glitter-text {
+  position: relative; z-index: 1; display: inline-block; padding: .08em .14em .14em;
+  font-family: var(--f-script); font-weight: 400; font-size: 54px; line-height: 1;
+  background:
+    linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, .95) 50%, transparent 58%) 150% 0/300% 100% no-repeat,
+    url(../img/glitter-zlate.png) 0 0/80px 80px;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 3px rgba(255, 220, 140, .85)) drop-shadow(0 0 12px rgba(246, 180, 80, .5));
+  animation: glitterMove 8s linear infinite, glitterPulse 3s ease-in-out infinite;
+}
+@keyframes glitterMove {
+  0% { background-position: 150% 0, 0 0; }
+  25% { background-position: -60% 0, 20px 8px; }
+  100% { background-position: -60% 0, 80px 32px; }
+}
+@keyframes glitterPulse {
+  50% { filter: drop-shadow(0 0 5px rgba(255, 236, 180, 1)) drop-shadow(0 0 20px rgba(246, 190, 90, .7)); }
+}
+/* rozsypané zrnká trblietok okolo písma */
+.glitter-logo::before {
+  content: ""; position: absolute; inset: -12% -10%; z-index: 0; pointer-events: none; opacity: .75;
+  background:
+    radial-gradient(circle, #ffe3a0 0 .8px, transparent 1.4px) 0 0/13px 17px,
+    radial-gradient(circle, #e8b25a 0 .7px, transparent 1.3px) 5px 3px/19px 11px,
+    radial-gradient(circle, #fff 0 .6px, transparent 1.2px) 2px 7px/29px 23px;
+  -webkit-mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000 0, rgba(0, 0, 0, .35) 55%, transparent 75%);
+  mask-image: radial-gradient(ellipse 50% 45% at 50% 55%, #000 0, rgba(0, 0, 0, .35) 55%, transparent 75%);
+  animation: specks 4s ease-in-out infinite;
+}
+@keyframes specks { 50% { opacity: .35; } }
+.glitter-logo i {
+  position: absolute; z-index: 2; width: 10px; height: 10px; pointer-events: none;
+  background: radial-gradient(circle, #fff 0 18%, #ffe3a0 32%, transparent 70%);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: twinkle 2.2s ease-in-out infinite;
+}
+.glitter-logo i:nth-of-type(1) { left: 8%; top: 18%; }
+.glitter-logo i:nth-of-type(2) { right: 6%; top: 30%; width: 13px; height: 13px; animation-delay: .7s; }
+.glitter-logo i:nth-of-type(3) { left: 48%; bottom: 4%; width: 8px; height: 8px; animation-delay: 1.4s; }
+.site-footer .glitter-text { font-size: 84px; }
+@media (max-width: 600px) { .site-header .glitter-text { font-size: 44px; } }

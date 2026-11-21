@@ -1,0 +1,5 @@
+.DS_Store
+# dáta zo servera (obsah, objednávky, odberatelia) – nepatria do gitu
+data/
+uploads/*
+!uploads/.htaccess
