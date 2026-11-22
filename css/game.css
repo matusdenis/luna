@@ -256,3 +256,11 @@
   .p-w .p-dot { width: 12px; height: 12px; }
   .p-tip { display: none; }
 }
+.p-listen[hidden] { display: none !important; }
+@media (max-width: 700px) {
+  .p-bar { gap: 8px; }
+  .p-songs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px; width: calc(100% + 32px); }
+  .p-songs::-webkit-scrollbar { display: none; }
+  .p-song { flex: none; padding: 6px 12px; font-size: 14px; }
+  .piano:not(.learning) .p-stage { height: 130px; }
+}

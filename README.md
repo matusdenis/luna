@@ -6,6 +6,7 @@ Magický web pre Lunu (produkcia Divadlo OSKAR): úvodná stránka, tabuľka ter
 - `index.html` – hlavná stránka
 - `obchod.html` – obchod (košík, objednávka)
 - `admin.html` – administrácia (prepínače sekcií Podujatia / Obchod / Hra, termíny, predstavenia, albumy, piesne/klipy, produkty, objednávky, novinky, odberatelia, nastavenia, záloha)
+- `js/audio.js` – spoločný zvuk hier (odomknutie na iPhone, hrá aj v tichom režime)
 - `js/game.js`, `js/piano.js`, `css/game.css` – hry: „Čarovné nebo“ (klikanie na čarovné veci) a „Lunin klavír“ (voľná hra + pesničky)
 - `api.php` – ukladanie na serveri (bez databázy, JSON súbory v `data/`)
 - `img/` – obrázky (dočasne výrezy z grafického návrhu – nahraď ich originálnymi fotkami)

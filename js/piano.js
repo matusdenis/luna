@@ -19,21 +19,24 @@
     { id: "oda", name: "Óda na radosť", icon: "♪", notes: n("E E F G G F E D C C D E E:1.5 D:.5 D:2 E E F G G F E D C C D E D:1.5 C:.5 C:2") }
   ];
 
-  let ac = null, master = null;
+  // výstup klavíra: hlasitosť + jemný filter, napojený na spoločný zvuk (js/audio.js)
+  let master = null, masterCtx = null;
   function audio() {
-    if (!ac) {
-      ac = new (window.AudioContext || window.webkitAudioContext)();
-      master = ac.createGain(); master.gain.value = .5;
-      const f = ac.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 3200;
-      master.connect(f).connect(ac.destination);
+    const A = window.LunaAudio && LunaAudio.get();
+    if (!A) return null;
+    if (masterCtx !== A.ctx) {
+      masterCtx = A.ctx;
+      master = A.ctx.createGain(); master.gain.value = .5;
+      const f = A.ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 3200;
+      master.connect(f).connect(A.out);
     }
-    if (ac.state === "suspended") ac.resume();
-    return ac;
+    return A.ctx;
   }
   // jednoduchý „klavírny“ tón: trojuholník + vyššie harmonické, rýchly nástup a doznievanie
   function tone(freq, at = 0, len = 1.6) {
     try {
-      const a = audio(), t = a.currentTime + at;
+      const a = audio(); if (!a) return;
+      const t = a.currentTime + at;
       [["triangle", 1, .5], ["sine", 2, .18], ["sine", 3, .06]].forEach(([type, m, v]) => {
         const o = a.createOscillator(), g = a.createGain();
         o.type = type; o.frequency.value = freq * m;
@@ -212,7 +215,7 @@
         section.querySelectorAll(".game-panel").forEach((p) => (p.hidden = p.id !== id));
       };
       tabs.forEach((t) => (t.onclick = () => show(t.dataset.tab)));
-      if (location.hash === "#klavir") show("piano");
+      if (location.hash === "#nebo") show("game");
     }
   };
 })();

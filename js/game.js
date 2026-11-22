@@ -85,18 +85,18 @@
   const PLAY_MS = { moon: 1700, star: 1500, whale: 2300, balloon: 3200, cloud: 1600, owl: 1800, castle: 2600, book: 2400 };
 
   /* ---------- zvuk: jemné zvončeky (Web Audio, bez súborov) ---------- */
-  let ac = null, muted = false;
+  let muted = false;
   function bell(freq, at = 0, vol = .12) {
     if (muted) return;
     try {
-      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-      if (ac.state === "suspended") ac.resume();
-      const t = ac.currentTime + at;
+      const A = window.LunaAudio && LunaAudio.get();
+      if (!A) return;
+      const ac = A.ctx, t = ac.currentTime + at;
       [[1, vol, 1.6], [2.01, vol * .35, .9], [3.02, vol * .12, .5]].forEach(([m, v, d]) => {
         const o = ac.createOscillator(), g = ac.createGain();
         o.type = "sine"; o.frequency.value = freq * m;
         g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
-        o.connect(g).connect(ac.destination); o.start(t); o.stop(t + d + .05);
+        o.connect(g).connect(A.out); o.start(t); o.stop(t + d + .05);
       });
     } catch (e) { /* zvuk nie je podstatný */ }
   }
