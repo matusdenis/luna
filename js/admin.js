@@ -239,7 +239,7 @@
 
   /* ---------------- NASTAVENIA ---------------- */
   function settingsView(m, note) {
-    const SW = [["showEvents", "Podujatia (termíny koncertov a predstavení)"], ["showShop", "Obchod (merch, košík)"], ["showGame", "Hra s Lunou"]];
+    const SW = [["showEvents", "Podujatia (termíny koncertov a predstavení)"], ["showShop", "Obchod (merch, košík)"], ["showGame", "Lunin klavír (hra)"]];
     const F = [["tagline", "Podnadpis (hero)", "text", { full: true }], ["about", "Kto je Luna? (text)", "textarea", { full: true }],
       ["trailerUrl", "Video ukážka (YouTube)", "url", { full: true, hint: "Tlačidlo „Pozri si ukážku“. Ak je prázdne, použije sa prvý klip." }],
       ["producer", "Producent", "text"], ["producerUrl", "Web producenta", "url"], ["email", "Kontaktný e-mail", "email"], ["phone", "Telefón", "text"],

@@ -203,19 +203,5 @@
     }
   };
 
-  /* záložky v sekcii Hraj sa: Čarovné nebo / Klavír */
-  window.LunaGames = {
-    init(section) {
-      if (!section) return;
-      window.LunaGame && LunaGame.init(section);
-      LunaPiano.init(section);
-      const tabs = [...section.querySelectorAll(".game-tab")];
-      const show = (id) => {
-        tabs.forEach((t) => { const on = t.dataset.tab === id; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); });
-        section.querySelectorAll(".game-panel").forEach((p) => (p.hidden = p.id !== id));
-      };
-      tabs.forEach((t) => (t.onclick = () => show(t.dataset.tab)));
-      if (location.hash === "#nebo") show("game");
-    }
-  };
+  window.LunaGames = { init(section) { if (section) LunaPiano.init(section); } };
 })();

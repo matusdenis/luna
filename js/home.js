@@ -22,7 +22,7 @@
   document.getElementById("aboutPlay").onclick = () => LunaUI.video(s.trailerUrl || (firstClip && firstClip.youtubeUrl));
 
   /* rýchle odkazy pod hero */
-  const quick = [["#pesnicky", "note", "Pesničky"], ["#predstavenia", "book", "Rozprávky"], showGame && ["#hra", "wand", "Hraj sa"],
+  const quick = [["#pesnicky", "note", "Pesničky"], ["#predstavenia", "book", "Rozprávky"], showGame && ["#hra", "note", "Klavír"],
     showEvents && ["#terminy", "cal", "Podujatia"], showShop && ["obchod.html", "bag", "Obchod"]].filter(Boolean);
   document.getElementById("quickLinks").innerHTML = quick.map(([h, ic, t]) => `<a href="${h}">${I[ic]}<span>${t}</span></a>`).join("");
 
@@ -32,7 +32,7 @@
     ["#predstavenia", "card-tales", "book", "Rozprávky", "Rozprávkové príbehy plné fantázie"],
     ["#o-lune", "card-world", "wand", "Svet Luny", "Magické miesta, postavy a tajomstvá"],
     showEvents ? ["#terminy", "card-shows", "cal", "Podujatia", "Kde sa s Lunou môžeš stretnúť naživo"]
-      : showGame ? ["#hra", "card-shows", "wand", "Hraj sa s Lunou", "Klikaj na čarovné veci a rozhýb celé nebo"]
+      : showGame ? ["#hra", "card-shows", "note", "Lunin klavír", "Zahraj si a nauč sa pesničku"]
       : ["#novinky", "card-shows", "cal", "Novinky", "Čo nové sa deje v Luninom svete"]
   ];
   document.getElementById("worldCards").innerHTML = cards.map(([h, img, ic, t, p], i) => `

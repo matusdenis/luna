@@ -27,7 +27,7 @@
     ["index.html", "Domov"],
     ["index.html#pesnicky", "Pesničky"],
     ["index.html#predstavenia", "Rozprávky"],
-    ["index.html#hra", "Hraj sa", "Game"],
+    ["index.html#hra", "Klavír", "Game"],
     ["index.html#terminy", "Podujatia", "Events"],
     ["obchod.html", "Obchod", "Shop"]
   ];
