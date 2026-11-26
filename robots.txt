@@ -1,0 +1,29 @@
+# Luna – www.dievcazobrazka.sk
+# Vyhľadávače aj AI asistenti môžu čítať verejný obsah webu.
+
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /api.php
+Disallow: /data/
+Disallow: /uploads/
+
+# AI asistenti a ich vyhľadávanie (výslovne povolené)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: CCBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api.php
+Disallow: /data/
+
+Sitemap: https://www.dievcazobrazka.sk/sitemap.xml

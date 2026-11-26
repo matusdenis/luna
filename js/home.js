@@ -123,6 +123,32 @@
       <div class="img"><img src="${esc(n.image)}" alt="" loading="lazy"></div>
       <h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></a>`).join("");
 
+  /* ---------- štruktúrované dáta z obsahu (termíny, album) pre Google a AI ---------- */
+  (function structuredData() {
+    const SITE = "https://www.dievcazobrazka.sk/";
+    const abs = (u) => { try { return new URL(u, SITE).href; } catch (e) { return SITE; } };
+    const graph = [];
+    if (showEvents) upcoming.forEach((e) => graph.push({
+      "@type": "TheaterEvent", name: e.show, startDate: e.date + (e.time ? "T" + e.time : ""),
+      eventStatus: "https://schema.org/EventScheduled", eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      location: { "@type": "Place", name: e.venue || e.city, address: { "@type": "PostalAddress", addressLocality: e.city, addressCountry: "SK" } },
+      image: abs((d.shows.find((x) => x.title === e.show) || {}).image || "img/luna-hero.jpg"),
+      description: (d.shows.find((x) => x.title === e.show) || {}).description || s.about,
+      organizer: { "@type": "PerformingGroup", name: s.producer, url: s.producerUrl },
+      performer: { "@type": "PerformingGroup", name: "Luna – " + s.producer },
+      offers: { "@type": "Offer", url: e.ticketUrl || SITE + "#terminy", availability: e.status === "vypredane" ? "https://schema.org/SoldOut" : "https://schema.org/InStock" }
+    }));
+    d.albums.forEach((a) => graph.push({
+      "@type": "MusicAlbum", name: a.title, datePublished: a.year || undefined, image: abs(a.cover || "img/card-songs.jpg"),
+      byArtist: { "@type": "MusicGroup", name: "Luna" }, description: a.description || undefined,
+      track: d.songs.filter((x) => x.albumId === a.id).map((x, i) => ({ "@type": "MusicRecording", position: i + 1, name: x.title, url: x.youtubeUrl || x.spotifyUrl || undefined }))
+    }));
+    if (!graph.length) return;
+    const el = document.createElement("script"); el.type = "application/ld+json";
+    el.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
+    document.head.append(el);
+  })();
+
   /* ---------- NEWSLETTER ---------- */
   document.getElementById("joinForm").onsubmit = async (ev) => {
     ev.preventDefault();

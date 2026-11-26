@@ -11,6 +11,14 @@ Magický web pre Lunu (produkcia Divadlo OSKAR): úvodná stránka, tabuľka ter
 - `api.php` – ukladanie na serveri (bez databázy, JSON súbory v `data/`)
 - `img/` – obrázky (dočasne výrezy z grafického návrhu – nahraď ich originálnymi fotkami)
 
+## SEO a AI vyhľadávanie (doména www.dievcazobrazka.sk)
+- `index.html`, `obchod.html` – titulky, popisy, kanonické adresy, náhľady na sociálne siete, štruktúrované dáta (JSON-LD: web, Divadlo OSKAR, Luna, časté otázky; termíny a album sa dopĺňajú z obsahu v admine)
+- `robots.txt` – povolené vyhľadávače aj AI asistenti (ChatGPT, Claude, Perplexity, Gemini…), admin a dáta zakázané
+- `sitemap.xml` – mapa stránok (po väčších zmenách uprav dátum `lastmod`)
+- `llms.txt` – súhrn webu pre AI asistentov (pri zmene kontaktov ho uprav)
+- `.htaccess` – presmerovanie na https://www, kompresia, cache
+- Po spustení domény: pridaj web do Google Search Console a Bing Webmaster Tools a odošli `sitemap.xml`.
+
 ## Nasadenie na hosting (napr. Websupport, bežný PHP hosting)
 1. Nahraj celý priečinok na hosting (PHP 7.4+).
 2. V `api.php` zmeň `ADMIN_PASSWORD` a `SECRET`.
