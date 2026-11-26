@@ -65,6 +65,14 @@ jobs:
           php -l config.php
           php -l api.php
 
+      # každá verzia dostane pri CSS/JS vlastné číslo (?v=…), aby prehliadače nebrali staré súbory z cache
+      - name: Verzie súborov (cache)
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          v="${GITHUB_SHA::8}"
+          sed -E -i "s#(src|href)=\"((css|js)/[^\"?]+\.(css|js))\"#\1=\"\2?v=$v\"#g" *.html
+          grep -ho '(css|js)/[^"]*?v=[a-f0-9]*' -E *.html | head -3
+
       # Websupport má na FTP certifikát na *.r6.websupport.sk – zistíme meno servera
       # z IP adresy (PTR), aby sedel certifikát a mohla ostať plná kontrola.
       - name: Názov FTP servera podľa certifikátu
