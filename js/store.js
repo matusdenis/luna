@@ -22,7 +22,7 @@
       trailerUrl: "",
       producer: "Divadlo OSKAR",
       producerUrl: "https://www.divadlooskar.sk/",
-      email: "divadlooskar@gmail.com",
+      email: "luna.pesnicky@gmail.com",
       phone: "0948 441 117",
       address: "Holíčska 26, 851 05 Bratislava",
       youtube: "",
@@ -30,7 +30,7 @@
       facebook: "https://www.facebook.com/divadlo.oskar/",
       spotify: "",
       youtubePlaylist: "",
-      shopEmail: "divadlooskar@gmail.com",
+      shopEmail: "luna.pesnicky@gmail.com",
       shippingPrice: 3.9,
       freeShippingFrom: 40,
       // prepínače sekcií webu (Admin → Nastavenia)
