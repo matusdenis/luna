@@ -1,0 +1,31 @@
+# Kontrola živého webu (verejné údaje): odpovedá web, API, sú nastavené obrázky a dajú sa načítať?
+name: Kontrola webu
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Nahrať web na FTP"]
+    types: [completed]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kontrola
+        run: |
+          B=https://www.dievcazobrazka.sk
+          for u in / /admin.html /api.php?a=get /js/home.js /data/ /config.php; do
+            echo "$(curl -s -o /dev/null -w '%{http_code}' "$B$u")  $u"
+          done
+          echo "--- verzia home.js na webe (obsahuje cardSongs?) ---"
+          curl -s "$B/js/home.js" | grep -c cardSongs || true
+          echo "--- index.html odkazy na JS ---"
+          curl -s "$B/" | grep -o 'js/home.js[^"]*' || true
+          echo "--- obrázky v nastaveniach (data.json cez api) ---"
+          curl -s "$B/api.php?a=get" | jq -r '.data.settings // {} | to_entries[] | select(.key|test("card|Image")) | "\(.key)=\(.value|tostring|.[0:80])"' || true
+          echo "--- dostupnosť obrázkov ---"
+          for img in $(curl -s "$B/api.php?a=get" | jq -r '.data.settings // {} | to_entries[] | select(.key|test("card|Image")) | .value' | grep -v '^data:'); do
+            echo "$(curl -s -o /dev/null -w '%{http_code} %{content_type}' "$B/$img")  $img"
+          done
+          echo "--- hlavičky ---"
+          curl -sI "$B/" | grep -iE "content-security|strict-transport|x-frame|cache-control|expires" || true
