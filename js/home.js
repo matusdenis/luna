@@ -2,6 +2,7 @@
 (async function () {
   const d = await LunaStore.load();
   const { esc, money, ytId } = LunaStore.util;
+  const U = LunaStore.util;
   const I = LunaUI.ICONS;
   LunaUI.header("Domov");
   LunaUI.footer();
@@ -68,7 +69,7 @@
       const dt = new Date(e.date + "T00:00");
       const btn = e.status === "vypredane"
         ? `<span class="muted">—</span>`
-        : e.ticketUrl ? `<a class="btn btn-small" href="${esc(e.ticketUrl)}" target="_blank" rel="noopener">Vstupenky</a>`
+        : e.ticketUrl ? `<a class="btn btn-small" href="${esc(U.url(e.ticketUrl))}" target="_blank" rel="noopener">Vstupenky</a>`
         : `<a class="btn btn-small" href="mailto:${esc(s.email)}?subject=${encodeURIComponent("Vstupenky: " + e.show + " – " + e.city + " " + dt.toLocaleDateString("sk-SK"))}">Rezervovať</a>`;
       return `<tr>
         <td class="c-date"><div class="date-badge"><div class="day"><b>${dt.getDate()}</b><small>${dt.toLocaleDateString("sk-SK", { month: "short" })}</small></div>
@@ -103,8 +104,8 @@
       <button class="num" ${hasClip ? `data-clip="${esc(so.youtubeUrl)}" aria-label="Prehrať klip ${esc(so.title)}"` : "disabled aria-label='Klip čoskoro'"}><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></button>
       <div><h4>${esc(so.title)}</h4><div class="meta">${esc([albumName(so.albumId), so.duration, so.note].filter(Boolean).join(" · "))}</div></div>
       <div class="links">
-        ${so.youtubeUrl ? `<a href="${esc(so.youtubeUrl)}" target="_blank" rel="noopener" aria-label="YouTube">${I.yt}</a>` : ""}
-        ${so.spotifyUrl ? `<a href="${esc(so.spotifyUrl)}" target="_blank" rel="noopener" aria-label="Spotify">${I.sp}</a>` : ""}
+        ${so.youtubeUrl ? `<a href="${esc(U.url(so.youtubeUrl))}" target="_blank" rel="noopener" aria-label="YouTube">${I.yt}</a>` : ""}
+        ${so.spotifyUrl ? `<a href="${esc(U.url(so.spotifyUrl))}" target="_blank" rel="noopener" aria-label="Spotify">${I.sp}</a>` : ""}
         ${!so.youtubeUrl && !so.spotifyUrl ? `<span class="badge-soon">čoskoro</span>` : ""}
       </div></li>`;
   }).join("") || `<li class="empty">Pesničky čoskoro pribudnú.</li>`;
@@ -114,11 +115,11 @@
     const n = d.songs.filter((x) => x.albumId === a.id).length;
     const prod = showShop && a.buyProductId && d.products.find((p) => p.id === a.buyProductId && p.active !== false);
     return `<div class="album">
-      <div class="cover"><img src="${esc(a.cover || "img/card-songs.jpg")}" alt="Album ${esc(a.title)}" loading="lazy"></div>
+      <div class="cover"><img src="${esc(U.img(a.cover) || "img/card-songs.jpg")}" alt="Album ${esc(a.title)}" loading="lazy"></div>
       <div><h4>${esc(a.title)}</h4><p>${esc([a.year, n ? n + " pesničiek" : "", a.description].filter(Boolean).join(" · "))}</p>
         <div class="links">
-          ${a.spotifyUrl ? `<a class="btn btn-small" href="${esc(a.spotifyUrl)}" target="_blank" rel="noopener">Spotify</a>` : ""}
-          ${a.youtubeUrl ? `<a class="btn btn-small" href="${esc(a.youtubeUrl)}" target="_blank" rel="noopener">YouTube</a>` : ""}
+          ${a.spotifyUrl ? `<a class="btn btn-small" href="${esc(U.url(a.spotifyUrl))}" target="_blank" rel="noopener">Spotify</a>` : ""}
+          ${a.youtubeUrl ? `<a class="btn btn-small" href="${esc(U.url(a.youtubeUrl))}" target="_blank" rel="noopener">YouTube</a>` : ""}
           ${prod ? `<a class="btn btn-small btn-gold" href="obchod.html#p-${esc(prod.id)}">Kúpiť CD · ${money(prod.price)}</a>` : ""}
         </div></div></div>`;
   }).join("");
@@ -127,7 +128,7 @@
   document.getElementById("showList").innerHTML = d.shows.map((sh, i) => {
     const next = upcoming.find((e) => e.show === sh.title);
     return `<article class="show-card reveal d${i % 3}">
-      <div class="img" style="background-image:url('${esc(sh.image || "img/attic.jpg")}')"></div>
+      <div class="img" style="background-image:url('${U.cssUrl(sh.image) || "img/attic.jpg"}')"></div>
       <div class="body"><h3>${esc(sh.title)}</h3>
         <div class="chips">${sh.age ? `<span class="chip">👧 ${esc(sh.age)}</span>` : ""}${sh.duration ? `<span class="chip">⏱ ${esc(sh.duration)}</span>` : ""}</div>
         <p>${esc(sh.description)}</p>
@@ -140,7 +141,7 @@
   const newsOk = (n) => showShop || !/obchod\.html/.test(n.link || "");
   document.getElementById("newsList").innerHTML = d.news.filter(newsOk).map((n, i) => `
     <a class="news-item reveal d${i % 3}" href="${esc(LunaStore.util.safeUrl(n.link) || "#")}">
-      <div class="img"><img src="${esc(n.image)}" alt="" loading="lazy"></div>
+      <div class="img"><img src="${esc(U.img(n.image) || "img/news-clip.jpg")}" alt="" loading="lazy"></div>
       <h3>${esc(n.title)}</h3><p>${esc(n.text)}</p></a>`).join("");
 
   /* ---------- štruktúrované dáta z obsahu (termíny, album) pre Google a AI ---------- */
@@ -172,8 +173,8 @@
   /* ---------- NEWSLETTER ---------- */
   document.getElementById("joinForm").onsubmit = async (ev) => {
     ev.preventDefault();
-    const email = ev.target.querySelector("input").value.trim();
-    await LunaStore.subscribe(email);
+    const email = ev.target.querySelector("input[type=email]").value.trim();
+    await LunaStore.subscribe(email, ev.target.elements.website.value);
     ev.target.reset(); document.querySelector(".consent input").checked = false;
     LunaUI.toast("Ďakujeme! Si súčasťou Luninho sveta 🌙");
   };

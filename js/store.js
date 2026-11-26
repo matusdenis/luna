@@ -81,7 +81,12 @@
 
   async function tryApi(url, opts) {
     const r = await fetch(url, opts);
-    if (!r.ok) throw new Error("HTTP " + r.status);
+    if (!r.ok) {
+      // server posiela zrozumiteľnú chybu v JSON (napr. nesprávne heslo, príliš veľa pokusov)
+      let msg = "HTTP " + r.status;
+      try { const j = await r.json(); if (j && j.error) msg = j.error; } catch (e) {}
+      const err = new Error(msg); err.status = r.status; throw err;
+    }
     const ct = r.headers.get("content-type") || "";
     if (!ct.includes("json")) throw new Error("not json");
     return r.json();
@@ -181,9 +186,9 @@
     },
 
     /* --- newsletter --- */
-    async subscribe(email) {
+    async subscribe(email, website) {
       if (mode === "api") {
-        try { await tryApi("api.php?a=subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }); } catch (e) {}
+        try { await tryApi("api.php?a=subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, website: website || "" }) }); } catch (e) {}
         return;
       }
       const list = JSON.parse(LS.get("luna-subs-v1") || "[]");
@@ -239,6 +244,12 @@
       if (m) return `https://www.youtube-nocookie.com/embed/videoseries?list=UU${m[1]}&rel=0`;
       return "";
     },
+    // bezpečný odkaz: len http(s), mailto, tel, kotva alebo vlastná stránka – nikdy javascript:
+    url(u) { u = String(u || "").trim(); return /^(https?:\/\/|mailto:|tel:|#|[\w-]+\.html(#[\w-]*)?$)/i.test(u) ? u : ""; },
+    // bezpečný obrázok: http(s), vlastné img/ a uploads/, alebo vložený obrázok z adminu
+    img(u) { u = String(u || "").trim(); return /^(https?:\/\/|img\/|uploads\/|data:image\/(png|jpe?g|webp|gif);)/i.test(u) ? u : ""; },
+    // obrázok do CSS url('…') – bez znakov, ktoré by ukončili reťazec
+    cssUrl(u) { return LunaStore.util.img(u).replace(/['"()\\\s]/g, encodeURIComponent); },
     safeUrl(u) { return /^(https?:|mailto:|tel:|#|img\/|[\w-]+\.html)/i.test(String(u || "")) ? u : ""; }
   };
 

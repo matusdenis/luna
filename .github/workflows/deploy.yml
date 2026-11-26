@@ -59,7 +59,9 @@ jobs:
         run: |
           if [ -z "$ADMIN_PASSWORD" ]; then echo "::error::Chýba tajomstvo ADMIN_PASSWORD"; exit 1; fi
           if [ ${#LUNA_SECRET} -lt 16 ]; then echo "::error::Tajomstvo LUNA_SECRET chýba alebo je kratšie ako 16 znakov"; exit 1; fi
-          php -r 'file_put_contents("config.php", "<?php\nconst ADMIN_PASSWORD = " . var_export(getenv("ADMIN_PASSWORD"), true) . ";\nconst SECRET = " . var_export(getenv("LUNA_SECRET"), true) . ";\n");'
+          # na server ide len hash hesla (bcrypt), nie samotné heslo
+          php -r 'file_put_contents("config.php", "<?php\nconst ADMIN_PASSWORD_HASH = " . var_export(password_hash(getenv("ADMIN_PASSWORD"), PASSWORD_DEFAULT), true) . ";\nconst PASSWORD_FINGERPRINT = " . var_export(hash_hmac("sha256", getenv("ADMIN_PASSWORD"), getenv("LUNA_SECRET")), true) . ";\nconst SECRET = " . var_export(getenv("LUNA_SECRET"), true) . ";\n");'
+          if [ ${#ADMIN_PASSWORD} -lt 10 ]; then echo "::warning::Heslo do adminu je kratšie ako 10 znakov – odporúčam dlhšie."; fi
           php -l config.php
           php -l api.php
 

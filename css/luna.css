@@ -625,3 +625,6 @@ html, body { overflow-x: clip; }
 .songs-layout.from-streams .song-list { display: none; }
 .songs-layout.from-streams { grid-template-columns: minmax(0, 760px); justify-content: center; }
 @media (max-width: 900px) { .streams { grid-template-columns: 1fr; } .stream.spotify iframe { height: 380px; } }
+
+/* pasca na robotov (pole, ktoré človek nevidí) */
+.hp { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; opacity: 0; }

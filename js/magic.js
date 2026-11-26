@@ -39,7 +39,7 @@
     header(active) {
       const s = (window.LunaStore && LunaStore.data && LunaStore.data.settings) || {};
       const social = [["youtube", "yt", "YouTube"], ["instagram", "ig", "Instagram"], ["facebook", "fb", "Facebook"], ["spotify", "sp", "Spotify"]]
-        .filter(([k]) => s[k]).map(([k, ic, t]) => `<a class="social" href="${s[k]}" target="_blank" rel="noopener" aria-label="${t}">${ICONS[ic]}</a>`).join("");
+        .filter(([k]) => LunaStore.util.url(s[k])).map(([k, ic, t]) => `<a class="social" href="${LunaStore.util.esc(LunaStore.util.url(s[k]))}" target="_blank" rel="noopener" aria-label="${t}">${ICONS[ic]}</a>`).join("");
       const el = document.createElement("header");
       el.className = "site-header";
       el.innerHTML = `
@@ -66,12 +66,12 @@
       const f = document.createElement("footer");
       f.className = "site-footer";
       f.innerHTML = `<div class="footer-grid">
-        <div><a class="glitter-logo" href="index.html" aria-label="Luna"><span class="glitter-text">Luna</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i></a><p>${e(s.tagline)}.</p><p>Produkcia: <a href="${e(s.producerUrl)}" target="_blank" rel="noopener">${e(s.producer)}</a></p></div>
+        <div><a class="glitter-logo" href="index.html" aria-label="Luna"><span class="glitter-text">Luna</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i></a><p>${e(s.tagline)}.</p><p>Produkcia: <a href="${e(LunaStore.util.url(s.producerUrl))}" target="_blank" rel="noopener">${e(s.producer)}</a></p></div>
         <div><h4>KONTAKT</h4><ul>
           ${s.email ? `<li><a href="mailto:${e(s.email)}">${e(s.email)}</a></li>` : ""}
           ${s.phone ? `<li><a href="tel:${e(s.phone.replace(/\s/g, ""))}">${e(s.phone)}</a></li>` : ""}
           ${s.address ? `<li>${e(s.address)}</li>` : ""}</ul></div>
-        <div><h4>MENU</h4><ul>${navItems().slice(1).map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}<li><a href="admin.html">Administrácia</a></li></ul></div>
+        <div><h4>MENU</h4><ul>${navItems().slice(1).map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
       </div><p class="copyright">© ${new Date().getFullYear()} Luna · ${e(s.producer)}</p>`;
       document.body.append(f);
     },
@@ -83,7 +83,7 @@
     },
     video(url) {
       const id = LunaStore.util.ytId(url);
-      if (!id) { if (url) window.open(url, "_blank"); else this.toast("Klip už čoskoro ✨"); return; }
+      if (!id) { const safe = LunaStore.util.url(url); if (safe) window.open(safe, "_blank", "noopener"); else this.toast("Klip už čoskoro ✨"); return; }
       let m = document.getElementById("videoModal");
       if (!m) {
         m = document.createElement("div"); m.id = "videoModal"; m.className = "modal";

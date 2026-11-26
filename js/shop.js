@@ -32,7 +32,7 @@
       const variants = String(p.variants || "").split(",").map((v) => v.trim()).filter(Boolean);
       return `<article class="product reveal d${list.indexOf(p) % 3} ${out ? "sold-out" : ""}" id="p-${esc(p.id)}">
         ${p.category ? `<span class="tag">${esc(p.category)}</span>` : ""}
-        <div class="img"><img src="${esc(p.image || "img/news-gifts.jpg")}" alt="${esc(p.name)}" loading="lazy"></div>
+        <div class="img"><img src="${esc(LunaStore.util.img(p.image) || "img/news-gifts.jpg")}" alt="${esc(p.name)}" loading="lazy"></div>
         <div class="body">
           <h3>${esc(p.name)}</h3><p>${esc(p.description)}</p>
           <div class="price">${money(p.price)}</div>
@@ -78,7 +78,7 @@
     cartEl.innerHTML = `<h2>Košík</h2>
       <ul class="cart-items">${items.map((i, idx) => {
         const p = products.find((x) => x.id === i.id);
-        return `<li class="cart-item"><img src="${esc(p.image)}" alt="">
+        return `<li class="cart-item"><img src="${esc(LunaStore.util.img(p.image) || "img/news-gifts.jpg")}" alt="">
           <div><b>${esc(p.name)}</b>${i.variant ? ` <span class="muted">(${esc(i.variant)})</span>` : ""}
             <div class="qty"><button data-q="${idx}" data-d="-1" aria-label="Menej">−</button>${i.qty}<button data-q="${idx}" data-d="1" aria-label="Viac">+</button></div></div>
           <div>${money(p.price * i.qty)}</div></li>`;
@@ -90,7 +90,8 @@
         <div class="total"><span>Spolu</span><span id="totalVal">${money(t.total)}</span></div>
       </div>
       <form class="checkout" id="checkout">
-        <label>Meno a priezvisko<input name="name" required autocomplete="name"></label>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label>Meno a priezvisko<input name="name" required autocomplete="name" maxlength="120"></label>
         <div class="row"><label>E-mail<input name="email" type="email" required autocomplete="email"></label>
           <label>Telefón<input name="phone" type="tel" required autocomplete="tel"></label></div>
         <label>Ulica a číslo<input name="street" required autocomplete="street-address"></label>

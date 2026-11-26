@@ -295,7 +295,8 @@
         <h2>Pridaj sa do Luninho sveta</h2>
         <p>Nezmeškaj nové pesničky, príbehy a podujatia.</p>
         <form class="join-form" id="joinForm">
-          <input type="email" required placeholder="Tvoj e-mail" aria-label="E-mail">
+          <input type="email" required placeholder="Tvoj e-mail" aria-label="E-mail" maxlength="254">
+          <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
           <button class="btn btn-gold" type="submit">Prihlásiť sa ›</button>
         </form>
         <label class="consent"><input type="checkbox" required form="joinForm"> Súhlasím so spracovaním osobných údajov.</label>

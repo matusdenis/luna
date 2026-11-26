@@ -169,9 +169,12 @@
     f.querySelector("#cancel").onclick = () => dlg.classList.remove("open");
     f.querySelectorAll("[data-up]").forEach((inp) => (inp.onchange = async () => {
       const file = inp.files[0]; if (!file) return;
+      const t = f.querySelector(`input[name="${inp.dataset.up}"]`), prev = t.value;
+      inp.disabled = true; t.value = "Nahrávam…";
       const url = await uploadImage(file);
-      const t = f.querySelector(`input[name="${inp.dataset.up}"]`); t.value = url;
-      inp.parentElement.querySelector("img").src = url;
+      inp.disabled = false; inp.value = "";
+      t.value = url || prev;
+      if (url) inp.parentElement.querySelector("img").src = url;
     }));
     f.querySelectorAll(".img-field input[type=text]").forEach((t) => (t.oninput = () => (t.parentElement.querySelector("img").src = t.value)));
     f.onsubmit = (e) => {
@@ -190,19 +193,38 @@
     };
   }
 
+  /* Fotka sa v prehliadači zmenší (max. 1600 px) a prevedie na JPG – funguje aj s fotkami
+     z iPhonu (HEIC) a veľkými súbormi, a odstráni z nich GPS polohu a ďalšie metadáta. */
+  async function toJpeg(file, maxSide, quality) {
+    const src = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+      const k = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      return await new Promise((res) => c.toBlob(res, "image/jpeg", quality));
+    } finally { URL.revokeObjectURL(src); }
+  }
+
   async function uploadImage(file) {
+    let jpg;
+    try { jpg = await toJpeg(file, LunaStore.mode === "api" ? 1600 : 900, LunaStore.mode === "api" ? .86 : .82); }
+    catch (e) { alert("Tento obrázok sa nedá otvoriť. Skús ho uložiť ako JPG alebo PNG a nahrať znova."); return ""; }
+    if (!jpg) { alert("Obrázok sa nepodarilo spracovať."); return ""; }
     if (LunaStore.mode === "api") {
-      const fd = new FormData(); fd.append("file", file);
-      const r = await fetch("api.php?a=upload", { method: "POST", headers: { "X-Luna-Token": token }, body: fd }).then((r) => r.json());
-      if (!r.ok) { alert(r.error || "Nahrávanie zlyhalo"); return ""; }
-      return r.url;
+      const fd = new FormData(); fd.append("file", jpg, "foto.jpg");
+      try {
+        const res = await fetch("api.php?a=upload", { method: "POST", headers: { "X-Luna-Token": token }, body: fd });
+        let r = {}; try { r = await res.json(); } catch (e) {}
+        if (res.status === 401) { alert("Prihlásenie vypršalo – prihlás sa znova."); return ""; }
+        if (!res.ok || !r.ok) { alert((r.error || "Nahrávanie zlyhalo") + " (chyba " + res.status + ")"); return ""; }
+        return r.url;
+      } catch (e) { alert("Nahrávanie zlyhalo – skontroluj pripojenie na internet."); return ""; }
     }
-    // lokálne: zmenšiť a uložiť ako data URL
-    const img = await new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.src = URL.createObjectURL(file); });
-    const k = Math.min(1, 900 / Math.max(img.width, img.height));
-    const c = document.createElement("canvas"); c.width = img.width * k; c.height = img.height * k;
-    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-    return c.toDataURL("image/jpeg", .82);
+    // lokálny náhľad bez servera: obrázok sa uloží priamo do prehliadača
+    return await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(jpg); });
   }
 
   /* ---------------- OBJEDNÁVKY ---------------- */
