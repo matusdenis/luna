@@ -78,6 +78,13 @@ jobs:
             *.websupport.sk) echo "server=$ptr" >> "$GITHUB_OUTPUT"; echo "Použijem $ptr";;
           esac
 
+      - name: Zber verejných kľúčov servera (dočasné)
+        if: steps.check.outputs.skip != 'true'
+        env:
+          HOST: ${{ steps.host.outputs.server || secrets.FTP_SERVER }}
+        run: |
+          for i in $(seq 1 25); do ssh-keyscan -T 10 -t ed25519,rsa,ecdsa "$HOST" 2>/dev/null; done | sort -u | sed 's/^/KEY /'
+
       # SFTP (port 22) – jedno spojenie, spoľahlivejšie ako FTP/FTPS na Websupporte.
       # Websupport má za jedným menom viac serverov s rôznymi kľúčmi, preto sa kľúč neoveruje.
       # Nahráva len súbory webu; na serveri nič nemaže (data/ a uploads/ ostanú).

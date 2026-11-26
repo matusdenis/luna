@@ -101,7 +101,7 @@
             <option value="posta">Slovenská pošta / kuriér</option><option value="osobny">Osobný odber na predstavení</option></select></label>
           <label>Platba<select name="payment"><option value="dobierka">Na dobierku</option><option value="prevod">Bankový prevod</option></select></label></div>
         <label>Poznámka<textarea name="note" rows="2"></textarea></label>
-        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" required style="width:auto"> Súhlasím s obchodnými podmienkami a spracovaním údajov.</label>
+        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" required style="width:auto"> Súhlasím s obchodnými podmienkami a beriem na vedomie <a href="ochrana-osobnych-udajov.html#objednavky" target="_blank">spracovanie osobných údajov</a>.</label>
         <button class="btn btn-gold" type="submit">Odoslať objednávku</button>
       </form>`;
     cartEl.querySelectorAll("[data-q]").forEach((b) => (b.onclick = () => {

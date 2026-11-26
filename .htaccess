@@ -6,6 +6,7 @@ AddDefaultCharset UTF-8
 AddType text/markdown;charset=UTF-8 .md
 AddType text/plain;charset=UTF-8 .txt
 AddType application/manifest+json .webmanifest
+AddType font/woff2 .woff2
 Options -Indexes
 
 # jedna adresa pre vyhľadávače: https://www.dievcazobrazka.sk
@@ -31,6 +32,7 @@ Options -Indexes
   ExpiresByType image/jpeg "access plus 1 month"
   ExpiresByType image/png "access plus 1 month"
   ExpiresByType video/mp4 "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
   ExpiresByType text/css "access plus 1 hour"
   ExpiresByType application/javascript "access plus 1 hour"
   ExpiresByType text/javascript "access plus 1 hour"
@@ -61,8 +63,8 @@ Options -Indexes
   # prehliadač bude web otvárať len cez https (1 rok)
   Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on'"
   # Content Security Policy: skripty len z vlastného webu (zastaví vložený škodlivý kód),
-  # povolené sú len Google Fonts, prehrávače YouTube a Spotify
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; upgrade-insecure-requests"
+  # povolené sú len prehrávače YouTube a Spotify
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; upgrade-insecure-requests"
   Header unset X-Powered-By
   <Files "admin.html">
     Header set X-Robots-Tag "noindex, nofollow"

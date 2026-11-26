@@ -90,10 +90,28 @@
     songsBox.classList.add("from-streams");
     songsBox.insertAdjacentHTML("beforebegin", `<div class="streams">
       ${spEmbed ? `<div class="stream spotify reveal"><h3>${I.sp} Pesničky na Spotify</h3>
-        <iframe src="${esc(spEmbed)}" title="Lunine pesničky na Spotify" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>` : ""}
+        <div class="embed" data-src="${esc(spEmbed)}" data-title="Lunine pesničky na Spotify" data-name="Spotify"
+          data-allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></div></div>` : ""}
       ${ytEmbed ? `<div class="stream youtube reveal d1"><h3>${I.yt} Videoklipy na YouTube</h3>
-        <div class="yt-frame"><iframe src="${esc(ytEmbed)}" title="Lunine videoklipy na YouTube" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>` : ""}
+        <div class="yt-frame embed" data-src="${esc(ytEmbed)}" data-title="Lunine videoklipy na YouTube" data-name="YouTube"
+          data-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></div></div>` : ""}
     </div>`);
+    // prehrávače sa načítajú až so súhlasom s externými médiami (cookies YouTube/Spotify)
+    const renderEmbeds = () => document.querySelectorAll(".embed[data-src]").forEach((el) => {
+      if (window.LunaConsent && !LunaConsent.media) {
+        if (el.querySelector(".embed-ask")) return;
+        el.innerHTML = `<div class="embed-ask"><p>Prehrávač <b>${esc(el.dataset.name)}</b> sa načíta až s tvojím súhlasom – ${esc(el.dataset.name)} ukladá vlastné cookies.</p>
+          <button class="btn btn-gold btn-small">▶ Zobraziť prehrávač</button>
+          <a href="ochrana-osobnych-udajov.html#cookies">Viac o cookies</a></div>`;
+        el.querySelector("button").onclick = () => LunaConsent.allowMedia();
+        return;
+      }
+      const f = document.createElement("iframe");
+      f.src = el.dataset.src; f.title = el.dataset.title; f.loading = "lazy"; f.allow = el.dataset.allow; f.allowFullscreen = true;
+      el.replaceChildren(f); el.removeAttribute("data-src");
+    });
+    renderEmbeds();
+    window.LunaConsent && LunaConsent.onChange(renderEmbeds);
   }
 
   /* ---------- PESNIČKY (zoznam z adminu) ---------- */

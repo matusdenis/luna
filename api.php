@@ -184,7 +184,7 @@ switch ($a) {
     if (limited('subscribe', 5, 3600)) out(['ok' => false, 'error' => 'Príliš veľa pokusov, skús to neskôr.'], 429);
     $subs = readJson("$DIR/subscribers.json", []);
     if (count($subs) >= 50000) out(['ok' => true]);
-    if (!in_array($e, array_column($subs, 'email'))) { $subs[] = ['email' => $e, 'date' => date('c')]; writeJson("$DIR/subscribers.json", $subs); }
+    if (!in_array($e, array_column($subs, 'email'))) { $subs[] = ['email' => $e, 'date' => date('c'), 'consent' => 'Súhlas so zasielaním noviniek – formulár na webe (zásady v1)']; writeJson("$DIR/subscribers.json", $subs); }
     out(['ok' => true]);
 
   case 'subscribers':

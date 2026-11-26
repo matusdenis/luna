@@ -72,8 +72,10 @@
           ${s.phone ? `<li><a href="tel:${e(s.phone.replace(/\s/g, ""))}">${e(s.phone)}</a></li>` : ""}
           ${s.address ? `<li>${e(s.address)}</li>` : ""}</ul></div>
         <div><h4>MENU</h4><ul>${navItems().slice(1).map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
-      </div><p class="copyright">© ${new Date().getFullYear()} Luna · ${e(s.producer)}</p>`;
+      </div><p class="copyright">© ${new Date().getFullYear()} Luna · ${e(s.producer)} ·
+        <a href="ochrana-osobnych-udajov.html">Ochrana osobných údajov</a> · <a href="#" class="cookie-link">Nastavenia cookies</a></p>`;
       document.body.append(f);
+      f.querySelector(".cookie-link").onclick = (ev) => { ev.preventDefault(); window.LunaConsent && LunaConsent.open(true); };
     },
     toast(msg) {
       let t = document.querySelector(".toast");
@@ -83,6 +85,14 @@
     },
     video(url) {
       const id = LunaStore.util.ytId(url);
+      // YouTube ukladá cookies – bez súhlasu najprv požiadaj o súhlas
+      if (id && window.LunaConsent && !LunaConsent.media) {
+        if (!this._waitConsent) {
+          this._waitConsent = true;
+          LunaConsent.onChange((c) => { const u = this._pendingVideo; this._pendingVideo = null; if (c.media && u) this.video(u); });
+        }
+        this._pendingVideo = url; LunaConsent.open(true); this.toast("Na prehratie videa povoľ externé médiá 🎬"); return;
+      }
       if (!id) { const safe = LunaStore.util.url(url); if (safe) window.open(safe, "_blank", "noopener"); else this.toast("Klip už čoskoro ✨"); return; }
       let m = document.getElementById("videoModal");
       if (!m) {

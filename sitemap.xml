@@ -14,6 +14,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://www.dievcazobrazka.sk/ochrana-osobnych-udajov.html</loc>
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://www.dievcazobrazka.sk/llms.txt</loc>
     <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
