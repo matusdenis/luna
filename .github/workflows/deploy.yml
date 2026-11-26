@@ -89,6 +89,9 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp > /dev/null
           dir="${FTP_DIR#/}"            # cesta od domovského priečinka FTP účtu
+          if [ "$PROTO" = "sftp" ]; then   # kľúč servera vopred (súbežné spojenia ho inak overujú naraz)
+            mkdir -p ~/.ssh && ssh-keyscan -T 15 "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
           case "$PROTO" in
             sftp) url="sftp://$HOST"; extra="set sftp:auto-confirm yes;";;
             *)    url="ftp://$HOST";  extra="set ftp:ssl-force true; set ssl:check-hostname no;";;
