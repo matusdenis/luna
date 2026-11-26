@@ -25,15 +25,15 @@ Options -Indexes
   AddOutputFilterByType DEFLATE text/html text/css text/plain text/markdown application/javascript text/javascript application/json image/svg+xml application/xml application/manifest+json
 </IfModule>
 
-# cache: obrázky a video dlho, CSS/JS týždeň, HTML vždy čerstvé
+# cache: obrázky mesiac, CSS/JS hodinu (opravy sa prejavia rýchlo), HTML vždy čerstvé
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/jpeg "access plus 1 month"
   ExpiresByType image/png "access plus 1 month"
   ExpiresByType video/mp4 "access plus 1 month"
-  ExpiresByType text/css "access plus 1 week"
-  ExpiresByType application/javascript "access plus 1 week"
-  ExpiresByType text/javascript "access plus 1 week"
+  ExpiresByType text/css "access plus 1 hour"
+  ExpiresByType application/javascript "access plus 1 hour"
+  ExpiresByType text/javascript "access plus 1 hour"
   ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
 
