@@ -243,7 +243,9 @@
     const F = [["tagline", "Podnadpis (hero)", "text", { full: true }], ["about", "Kto je Luna? (text)", "textarea", { full: true }],
       ["trailerUrl", "Video ukážka (YouTube)", "url", { full: true, hint: "Tlačidlo „Pozri si ukážku“. Ak je prázdne, použije sa prvý klip." }],
       ["producer", "Producent", "text"], ["producerUrl", "Web producenta", "url"], ["email", "Kontaktný e-mail", "email"], ["phone", "Telefón", "text"],
-      ["address", "Adresa", "text", { full: true }], ["youtube", "YouTube kanál", "url"], ["spotify", "Spotify", "url"], ["instagram", "Instagram", "url"], ["facebook", "Facebook", "url"],
+      ["address", "Adresa", "text", { full: true }], ["spotify", "Spotify – pesničky", "url", { full: true, hint: "Odkaz na Lunu na Spotify (umelec, album alebo playlist). Pesničky sa na webe načítajú priamo zo Spotify." }],
+      ["youtubePlaylist", "YouTube – videoklipy", "url", { full: true, hint: "Odkaz na YouTube playlist s klipmi (…?list=…) alebo kanál v tvare youtube.com/channel/UC…. Klipy sa načítajú priamo z YouTube." }],
+      ["youtube", "YouTube kanál (ikona v hlavičke)", "url"], ["instagram", "Instagram", "url"], ["facebook", "Facebook", "url"],
       ["shopEmail", "E-mail pre objednávky", "email"], ["shippingPrice", "Cena dopravy (€)", "number", { step: "0.01" }], ["freeShippingFrom", "Doprava zdarma od (€)", "number", { step: "0.01" }]];
     m.innerHTML = `${note}<h1>Nastavenia</h1><form class="card" id="sf">
       <h2 style="margin:0 0 4px;font-size:18px">Sekcie webu</h2>

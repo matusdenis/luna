@@ -29,11 +29,12 @@
       instagram: "http://www.instagram.com/divadlo.oskar/",
       facebook: "https://www.facebook.com/divadlo.oskar/",
       spotify: "",
+      youtubePlaylist: "",
       shopEmail: "divadlooskar@gmail.com",
       shippingPrice: 3.9,
       freeShippingFrom: 40,
       // prepínače sekcií webu (Admin → Nastavenia)
-      showEvents: true,
+      showEvents: false,
       showShop: true,
       showGame: true
     },
@@ -224,6 +225,20 @@
     },
     // je sekcia zapnutá? (chýbajúce nastavenie = zapnutá)
     on(name) { return !data || !data.settings || data.settings["show" + name] !== false; },
+    // Spotify odkaz (umelec / album / playlist / skladba) → adresa prehrávača na vloženie
+    spotifyEmbed(url) {
+      const m = String(url || "").match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(artist|album|playlist|track|show)\/([A-Za-z0-9]+)/);
+      return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0` : "";
+    },
+    // YouTube playlist alebo kanál (/channel/UC…) → adresa prehrávača so zoznamom klipov
+    ytListEmbed(url) {
+      const s = String(url || "");
+      let m = s.match(/[?&]list=([\w-]+)/);
+      if (m) return `https://www.youtube-nocookie.com/embed/videoseries?list=${m[1]}&rel=0`;
+      m = s.match(/youtube\.com\/channel\/UC([\w-]{22})/);
+      if (m) return `https://www.youtube-nocookie.com/embed/videoseries?list=UU${m[1]}&rel=0`;
+      return "";
+    },
     safeUrl(u) { return /^(https?:|mailto:|tel:|#|img\/|[\w-]+\.html)/i.test(String(u || "")) ? u : ""; }
   };
 

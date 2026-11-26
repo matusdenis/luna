@@ -18,11 +18,18 @@
   }
   document.getElementById("aboutText").textContent = s.about;
   const firstClip = d.songs.find((x) => ytId(x.youtubeUrl));
-  document.getElementById("trailerBtn").onclick = () => LunaUI.video(s.trailerUrl || (firstClip && firstClip.youtubeUrl));
-  document.getElementById("aboutPlay").onclick = () => LunaUI.video(s.trailerUrl || (firstClip && firstClip.youtubeUrl));
+  // ukážka: video z Nastavení → prvý klip pesničky → klipy z YouTube playlistu v sekcii Pesničky
+  const playTrailer = () => {
+    const url = s.trailerUrl || (firstClip && firstClip.youtubeUrl);
+    const yt = document.querySelector(".stream.youtube");
+    if (!LunaStore.util.ytId(url) && yt) { yt.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    LunaUI.video(url);
+  };
+  document.getElementById("trailerBtn").onclick = playTrailer;
+  document.getElementById("aboutPlay").onclick = playTrailer;
 
   /* rýchle odkazy pod hero */
-  const quick = [["#pesnicky", "note", "Pesničky"], ["#predstavenia", "book", "Rozprávky"], showGame && ["#hra", "note", "Klavír"],
+  const quick = [["#pesnicky", "note", "Pesničky"], ["#predstavenia", "book", "Rozprávky"], showGame && ["#hra", "piano", "Klavír"],
     showEvents && ["#terminy", "cal", "Podujatia"], showShop && ["obchod.html", "bag", "Obchod"]].filter(Boolean);
   document.getElementById("quickLinks").innerHTML = quick.map(([h, ic, t]) => `<a href="${h}">${I[ic]}<span>${t}</span></a>`).join("");
 
@@ -32,7 +39,7 @@
     ["#predstavenia", "card-tales", "book", "Rozprávky", "Rozprávkové príbehy plné fantázie"],
     ["#o-lune", "card-world", "wand", "Svet Luny", "Magické miesta, postavy a tajomstvá"],
     showEvents ? ["#terminy", "card-shows", "cal", "Podujatia", "Kde sa s Lunou môžeš stretnúť naživo"]
-      : showGame ? ["#hra", "card-shows", "note", "Lunin klavír", "Zahraj si a nauč sa pesničku"]
+      : showGame ? ["#hra", "card-shows", "piano", "Lunin klavír", "Zahraj si a nauč sa pesničku"]
       : ["#novinky", "card-shows", "cal", "Novinky", "Čo nové sa deje v Luninom svete"]
   ];
   document.getElementById("worldCards").innerHTML = cards.map(([h, img, ic, t, p], i) => `
@@ -75,7 +82,20 @@
   }
   if (showEvents) { fCity.onchange = fShow.onchange = renderEvents; renderEvents(); }
 
-  /* ---------- PESNIČKY ---------- */
+  /* ---------- PESNIČKY: zo Spotify a klipy z YouTube (ak sú v Nastaveniach) ---------- */
+  const spEmbed = LunaStore.util.spotifyEmbed(s.spotify), ytEmbed = LunaStore.util.ytListEmbed(s.youtubePlaylist || s.youtube);
+  const songsBox = document.querySelector("#pesnicky .songs-layout");
+  if (spEmbed || ytEmbed) {
+    songsBox.classList.add("from-streams");
+    songsBox.insertAdjacentHTML("beforebegin", `<div class="streams">
+      ${spEmbed ? `<div class="stream spotify reveal"><h3>${I.sp} Pesničky na Spotify</h3>
+        <iframe src="${esc(spEmbed)}" title="Lunine pesničky na Spotify" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>` : ""}
+      ${ytEmbed ? `<div class="stream youtube reveal d1"><h3>${I.yt} Videoklipy na YouTube</h3>
+        <div class="yt-frame"><iframe src="${esc(ytEmbed)}" title="Lunine videoklipy na YouTube" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>` : ""}
+    </div>`);
+  }
+
+  /* ---------- PESNIČKY (zoznam z adminu) ---------- */
   const albumName = (id) => (d.albums.find((a) => a.id === id) || {}).title || "";
   document.getElementById("songList").innerHTML = d.songs.map((so) => {
     const hasClip = !!so.youtubeUrl;
