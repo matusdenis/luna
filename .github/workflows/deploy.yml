@@ -64,11 +64,24 @@ jobs:
           php -l config.php
           php -l api.php
 
+      # Websupport má na FTP certifikát na *.r6.websupport.sk – zistíme meno servera
+      # z IP adresy (PTR), aby sedel certifikát a mohla ostať plná kontrola.
+      - name: Názov FTP servera podľa certifikátu
+        id: host
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          ip=$(getent ahostsv4 "$FTP_SERVER" | awk 'NR==1{print $1}')
+          ptr=$(dig +short -x "$ip" 2>/dev/null | sed 's/\.$//' | head -1)
+          echo "PTR: ${ptr:-žiadny}"
+          case "$ptr" in
+            *.websupport.sk) echo "server=$ptr" >> "$GITHUB_OUTPUT"; echo "Použijem $ptr";;
+          esac
+
       - name: Nahrať na FTP
         if: steps.check.outputs.skip != 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          server: ${{ steps.host.outputs.server || secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ${{ secrets.FTP_PROTOCOL || 'ftps' }}
