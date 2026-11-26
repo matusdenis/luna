@@ -3,11 +3,10 @@
 #   FTP_SERVER     napr. ftp.dievcazobrazka.sk
 #   FTP_USERNAME   používateľ FTP
 #   FTP_PASSWORD   heslo FTP
-#   FTP_DIR        priečinok webu na serveri, napr. /web/ (koniec s lomkou)
+#   FTP_DIR        priečinok webu na serveri, napr. /dievcazobrazka.sk/web/
 #   ADMIN_PASSWORD heslo do administrácie webu
 #   LUNA_SECRET    dlhý náhodný text (podpis prihlásenia do adminu)
-# Nepovinné: FTP_PROTOCOL (ftps | ftp, predvolene ftps)
-#            FTP_SECURITY (strict | loose – loose, ak certifikát FTP servera nesedí s adresou)
+# Nepovinné: FTP_PROTOCOL (sftp | ftps, predvolene sftp)
 name: Nahrať web na FTP
 
 on:
@@ -77,20 +76,28 @@ jobs:
             *.websupport.sk) echo "server=$ptr" >> "$GITHUB_OUTPUT"; echo "Použijem $ptr";;
           esac
 
-      - name: Nahrať na FTP
+      # SFTP (port 22) – jedno spojenie, spoľahlivejšie ako FTP/FTPS na Websupporte.
+      # Nahráva len súbory webu; na serveri nič nemaže (data/ a uploads/ ostanú).
+      - name: Nahrať na server (SFTP)
         if: steps.check.outputs.skip != 'true'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ steps.host.outputs.server || secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ secrets.FTP_PROTOCOL || 'ftps' }}
-          security: ${{ secrets.FTP_SECURITY || 'strict' }}
-          port: 21
-          server-dir: ${{ secrets.FTP_DIR || './' }}
-          exclude: |
-            **/.git*
-            **/.git*/**
-            .github/**
-            README.md
-            **/.DS_Store
+        env:
+          HOST: ${{ steps.host.outputs.server || secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_DIR }}
+          PROTO: ${{ secrets.FTP_PROTOCOL || 'sftp' }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp > /dev/null
+          dir="${FTP_DIR#/}"            # cesta od domovského priečinka FTP účtu
+          case "$PROTO" in
+            sftp) url="sftp://$HOST"; extra="set sftp:auto-confirm yes;";;
+            *)    url="ftp://$HOST";  extra="set ftp:ssl-force true; set ssl:check-hostname no;";;
+          esac
+          lftp -c "$extra set net:max-retries 4; set net:reconnect-interval-base 5; set net:timeout 30;
+            open -u \"$FTP_USERNAME\" --env-password $url;
+            mkdir -p -f \"$dir\";
+            mirror --reverse --verbose --parallel=3 --no-perms \
+              --exclude-glob .git* --exclude ^\.git/ --exclude ^\.github/ \
+              --exclude-glob README.md --exclude-glob .DS_Store \
+              ./ \"$dir\""
+          echo "Hotovo – web nahraný do $FTP_DIR"
