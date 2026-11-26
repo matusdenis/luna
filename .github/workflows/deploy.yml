@@ -93,13 +93,13 @@ jobs:
             mkdir -p ~/.ssh && ssh-keyscan -T 15 "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
           fi
           case "$PROTO" in
-            sftp) url="sftp://$HOST"; extra="set sftp:auto-confirm yes;";;
+            sftp) url="sftp://$HOST"; extra="set sftp:auto-confirm yes; set sftp:connect-program 'ssh -a -x -o StrictHostKeyChecking=accept-new';";;
             *)    url="ftp://$HOST";  extra="set ftp:ssl-force true; set ssl:check-hostname no;";;
           esac
           lftp -c "$extra set net:max-retries 4; set net:reconnect-interval-base 5; set net:timeout 30;
             open -u \"$FTP_USERNAME\" --env-password $url;
             mkdir -p -f \"$dir\";
-            mirror --reverse --verbose --parallel=3 --no-perms \
+            mirror --reverse --verbose --parallel=1 --no-perms \
               --exclude-glob .git* --exclude ^\.git/ --exclude ^\.github/ \
               --exclude-glob README.md --exclude-glob .DS_Store \
               ./ \"$dir\""
