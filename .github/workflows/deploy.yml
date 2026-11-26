@@ -27,11 +27,27 @@ jobs:
     steps:
       - name: Kontrola nastavení
         id: check
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ secrets.FTP_DIR }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          LUNA_SECRET: ${{ secrets.LUNA_SECRET }}
         run: |
           if [ -z "$FTP_SERVER" ]; then
             echo "::notice::Chýba tajomstvo FTP_SERVER – nahrávanie preskočené."
             echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          missing=""
+          for n in FTP_USERNAME FTP_PASSWORD FTP_DIR ADMIN_PASSWORD LUNA_SECRET; do
+            [ -z "${!n}" ] && missing="$missing $n"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Chýbajú tajomstvá:$missing (Settings → Secrets and variables → Actions → Repository secrets)"
+            exit 1
+          fi
+          echo "Všetky tajomstvá sú nastavené."
 
       - uses: actions/checkout@v4
         if: steps.check.outputs.skip != 'true'
