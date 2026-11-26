@@ -8,6 +8,9 @@
   LunaUI.footer();
 
   const s = d.settings;
+  // obrázky z Nastavení (úvodná fotka, Kto je Luna)
+  if (U.img(s.heroImage) && s.heroImage !== "img/luna-hero.jpg") document.querySelector(".hero-bg").style.backgroundImage = `url('${U.cssUrl(s.heroImage)}')`;
+  if (U.img(s.aboutImage)) document.querySelector("#o-lune .video-frame img").src = U.img(s.aboutImage);
   const on = LunaStore.util.on;
   const showEvents = on("Events"), showShop = on("Shop"), showGame = on("Game");
   if (!showEvents) document.getElementById("terminy").remove();
@@ -36,16 +39,16 @@
 
   /* karty Objav Lunin svet */
   const cards = [
-    ["#pesnicky", "card-songs", "note", "Pesničky", "Vypočuj si Lunine piesne a pozri si videoklipy"],
-    ["#predstavenia", "card-tales", "book", "Rozprávky", "Rozprávkové príbehy plné fantázie"],
-    ["#o-lune", "card-world", "wand", "Svet Luny", "Magické miesta, postavy a tajomstvá"],
-    showEvents ? ["#terminy", "card-shows", "cal", "Podujatia", "Kde sa s Lunou môžeš stretnúť naživo"]
-      : showGame ? ["#hra", "card-shows", "piano", "Lunin klavír", "Zahraj si a nauč sa pesničku"]
-      : ["#novinky", "card-shows", "cal", "Novinky", "Čo nové sa deje v Luninom svete"]
+    ["#pesnicky", "cardSongs", "note", "Pesničky", "Vypočuj si Lunine piesne a pozri si videoklipy"],
+    ["#predstavenia", "cardTales", "book", "Rozprávky", "Rozprávkové príbehy plné fantázie"],
+    ["#o-lune", "cardWorld", "wand", "Svet Luny", "Magické miesta, postavy a tajomstvá"],
+    showEvents ? ["#terminy", "cardFourth", "cal", "Podujatia", "Kde sa s Lunou môžeš stretnúť naživo"]
+      : showGame ? ["#hra", "cardFourth", "piano", "Lunin klavír", "Zahraj si a nauč sa pesničku"]
+      : ["#novinky", "cardFourth", "cal", "Novinky", "Čo nové sa deje v Luninom svete"]
   ];
   document.getElementById("worldCards").innerHTML = cards.map(([h, img, ic, t, p], i) => `
     <a class="world-card reveal d${i}" href="${h}">
-      <div class="bg" style="background-image:url(img/${img}.jpg)"></div>
+      <div class="bg" style="background-image:url('${U.cssUrl(s[img]) || U.cssUrl(LunaStore.DEFAULT.settings[img])}')"></div>
       <div class="body"><h3>${I[ic]}${t}</h3><p>${p}</p></div>
       <span class="arrow">›</span>
     </a>`).join("");

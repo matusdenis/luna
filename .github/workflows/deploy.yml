@@ -78,15 +78,9 @@ jobs:
             *.websupport.sk) echo "server=$ptr" >> "$GITHUB_OUTPUT"; echo "Použijem $ptr";;
           esac
 
-      - name: Zber verejných kľúčov servera (dočasné)
-        if: steps.check.outputs.skip != 'true'
-        env:
-          HOST: ${{ steps.host.outputs.server || secrets.FTP_SERVER }}
-        run: |
-          for i in $(seq 1 25); do ssh-keyscan -T 10 -t ed25519,rsa,ecdsa "$HOST" 2>/dev/null; done | sort -u | sed 's/^/KEY /'
-
       # SFTP (port 22) – jedno spojenie, spoľahlivejšie ako FTP/FTPS na Websupporte.
-      # Websupport má za jedným menom viac serverov s rôznymi kľúčmi, preto sa kľúč neoveruje.
+      # Websupport má za jedným menom viac serverov – všetky ich verejné kľúče sú pripnuté nižšie,
+      # takže sa nedá podvrhnúť falošný server. Ak Websupport kľúče zmení, nahrávanie zlyhá s hláškou.
       # Nahráva len súbory webu; na serveri nič nemaže (data/ a uploads/ ostanú).
       - name: Nahrať na server (SFTP)
         if: steps.check.outputs.skip != 'true'
@@ -99,8 +93,17 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp > /dev/null
           dir="${FTP_DIR#/}"            # cesta od domovského priečinka FTP účtu
+          mkdir -p ~/.ssh && cat > ~/.ssh/luna_known_hosts <<'KEYS'
+            *.r6.websupport.sk,dievcazobrazka.sk ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAitmwiw7RI93HWSdaeZCmyKN9sp4t/12vtYGA6VglUBSfzzJ0fpslxD1gCXtMlYO80U0y5ywQ8c3eMd0avsbB0=
+            *.r6.websupport.sk,dievcazobrazka.sk ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCmenu2sKpaedBjlhtwRjllvBQHBdeIhTNE9QPbdcWAwSvQNQGFKe7OTK5Ug/FyekXUptUVym+KnCv6yvUiHvTA=
+            *.r6.websupport.sk,dievcazobrazka.sk ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBKIhLnrYDQB0dOMWloTgBKNdArKAwbLXL8pFxkJHI8/prOiL52CJTPwDlRZDCsq/GWPJzOzYm6utm1NCczp7i6Q=
+            *.r6.websupport.sk,dievcazobrazka.sk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAcJPU6fiVEUqzGYLldoX2SvAexW6YGBGnFLtzcmLFFO
+            *.r6.websupport.sk,dievcazobrazka.sk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBcrFSQP9az2tB6hH/pm5sKjKXVV10LTiRdSRpOPli84
+            *.r6.websupport.sk,dievcazobrazka.sk ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJQvrah3N/zAyh04Tg0CUqdlgCZo2wA2iwzFGEINE7H+
+          KEYS
+          sed -i 's/^ *//' ~/.ssh/luna_known_hosts
           case "$PROTO" in
-            sftp) url="sftp://$HOST"; extra="set sftp:auto-confirm yes; set sftp:connect-program 'ssh -a -x -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR';";;
+            sftp) url="sftp://$HOST"; extra="set sftp:auto-confirm yes; set sftp:connect-program 'ssh -a -x -o StrictHostKeyChecking=yes -o UserKnownHostsFile=~/.ssh/luna_known_hosts -o LogLevel=ERROR';";;
             *)    url="ftp://$HOST";  extra="set ftp:ssl-force true; set ssl:check-hostname no;";;
           esac
           lftp -c "$extra set net:max-retries 4; set net:reconnect-interval-base 5; set net:timeout 30;
@@ -109,5 +112,5 @@ jobs:
             mirror --reverse --verbose --parallel=1 --no-perms \
               --exclude-glob .git* --exclude ^\.git/ --exclude ^\.github/ \
               --exclude-glob README.md --exclude-glob .DS_Store \
-              ./ \"$dir\""
+              ./ \"$dir\"" || { echo "::error::Nahrávanie zlyhalo. Ak je vyššie „Host key verification failed“, Websupport zmenil kľúče servera – treba ich v deploy.yml aktualizovať."; exit 1; }
           echo "Hotovo – web nahraný do $FTP_DIR"

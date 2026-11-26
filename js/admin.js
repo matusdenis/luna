@@ -167,16 +167,7 @@
       <div class="bar" style="margin:18px 0 0;justify-content:flex-end"><button type="button" class="a-btn" id="cancel">Zrušiť</button><button class="a-btn pri">Hotovo</button></div>`;
     dlg.classList.add("open");
     f.querySelector("#cancel").onclick = () => dlg.classList.remove("open");
-    f.querySelectorAll("[data-up]").forEach((inp) => (inp.onchange = async () => {
-      const file = inp.files[0]; if (!file) return;
-      const t = f.querySelector(`input[name="${inp.dataset.up}"]`), prev = t.value;
-      inp.disabled = true; t.value = "Nahrávam…";
-      const url = await uploadImage(file);
-      inp.disabled = false; inp.value = "";
-      t.value = url || prev;
-      if (url) inp.parentElement.querySelector("img").src = url;
-    }));
-    f.querySelectorAll(".img-field input[type=text]").forEach((t) => (t.oninput = () => (t.parentElement.querySelector("img").src = t.value)));
+    wireImages(f);
     f.onsubmit = (e) => {
       e.preventDefault();
       const out = { ...rec };
@@ -260,9 +251,29 @@
   }
 
   /* ---------------- NASTAVENIA ---------------- */
+  /* polia s obrázkom: nahratie fotky a náhľad */
+  function wireImages(f) {
+    f.querySelectorAll("[data-up]").forEach((inp) => (inp.onchange = async () => {
+      const file = inp.files[0]; if (!file) return;
+      const t = f.querySelector(`input[name="${inp.dataset.up}"]`), prev = t.value;
+      inp.disabled = true; t.value = "Nahrávam…";
+      const url = await uploadImage(file);
+      inp.disabled = false; inp.value = "";
+      t.value = url || prev;
+      if (url) inp.parentElement.querySelector("img").src = url;
+    }));
+    f.querySelectorAll(".img-field input[type=text]").forEach((t) => (t.oninput = () => (t.parentElement.querySelector("img").src = t.value)));
+  }
+
   function settingsView(m, note) {
     const SW = [["showEvents", "Podujatia (termíny koncertov a predstavení)"], ["showShop", "Obchod (merch, košík)"], ["showGame", "Lunin klavír (hra)"]];
     const F = [["tagline", "Podnadpis (hero)", "text", { full: true }], ["about", "Kto je Luna? (text)", "textarea", { full: true }],
+      ["heroImage", "Úvodná fotka (veľká hore)", "image", { full: true }],
+      ["aboutImage", "Fotka pri „Kto je Luna?“", "image", { full: true }],
+      ["cardSongs", "Karta „Pesničky“ – obrázok", "image", { full: true }],
+      ["cardTales", "Karta „Rozprávky“ – obrázok", "image", { full: true }],
+      ["cardWorld", "Karta „Svet Luny“ – obrázok", "image", { full: true }],
+      ["cardFourth", "4. karta (Klavír / Podujatia) – obrázok", "image", { full: true }],
       ["trailerUrl", "Video ukážka (YouTube)", "url", { full: true, hint: "Tlačidlo „Pozri si ukážku“. Ak je prázdne, použije sa prvý klip." }],
       ["producer", "Producent", "text"], ["producerUrl", "Web producenta", "url"], ["email", "Kontaktný e-mail", "email"], ["phone", "Telefón", "text"],
       ["address", "Adresa", "text", { full: true }], ["spotify", "Spotify – pesničky", "url", { full: true, hint: "Odkaz na Lunu na Spotify (umelec, album alebo playlist). Pesničky sa na webe načítajú priamo zo Spotify." }],
@@ -276,6 +287,7 @@
       <hr style="border:0;border-top:1px solid #eceef6;margin:20px 0">
       <div class="form">${F.map((f) => fieldHtml(f, data.settings[f[0]])).join("")}</div>
       <div class="bar" style="margin:18px 0 0"><button class="a-btn pri">Použiť</button></div></form>`;
+    wireImages(m.querySelector("#sf"));
     m.querySelector("#sf").onsubmit = (e) => {
       e.preventDefault();
       F.forEach(([n, , t]) => { const v = e.target.elements[n].value.trim(); data.settings[n] = t === "number" ? Number(v || 0) : v; });

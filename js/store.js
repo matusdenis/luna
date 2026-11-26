@@ -30,6 +30,13 @@
       facebook: "https://www.facebook.com/divadlo.oskar/",
       spotify: "",
       youtubePlaylist: "",
+      // obrázky (dajú sa zmeniť v Admin → Nastavenia)
+      heroImage: "img/luna-hero.jpg",
+      aboutImage: "img/attic.jpg",
+      cardSongs: "img/card-songs.jpg",
+      cardTales: "img/card-tales.jpg",
+      cardWorld: "img/card-world.jpg",
+      cardFourth: "img/card-shows.jpg",
       shopEmail: "luna.pesnicky@gmail.com",
       shippingPrice: 3.9,
       freeShippingFrom: 40,
