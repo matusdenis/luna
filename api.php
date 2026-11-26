@@ -4,12 +4,15 @@
    Obsah sa ukladá do data/*.json, obrázky do uploads/.
    ============================================================ */
 
-// >>> NASTAV SI HESLO DO ADMINISTRÁCIE <<<
-// Bezpečnejšie: vlož sem hash z password_hash('tvoje-heslo', PASSWORD_DEFAULT)
-const ADMIN_PASSWORD = 'zmen-ma-luna';
-const ADMIN_PASSWORD_HASH = '';           // ak je vyplnený, použije sa namiesto ADMIN_PASSWORD
-// Tajný kľúč na podpisovanie prihlásenia – zmeň na ľubovoľný dlhý náhodný text
-const SECRET = 'zmen-tento-tajny-kluc-na-nieco-dlhe-a-nahodne';
+// >>> HESLO DO ADMINISTRÁCIE <<<
+// Heslo NIE JE v tomto súbore (repozitár je verejný). Je v súbore config.php,
+// ktorý vytvorí GitHub pri nahrávaní na FTP z tajomstiev ADMIN_PASSWORD a LUNA_SECRET.
+// Ručne: vytvor vedľa api.php súbor config.php s obsahom:
+//   <?php const ADMIN_PASSWORD = 'tvoje-heslo'; const SECRET = 'dlhy-nahodny-text';
+if (file_exists(__DIR__ . '/config.php')) require __DIR__ . '/config.php';
+defined('ADMIN_PASSWORD') || define('ADMIN_PASSWORD', '');
+defined('ADMIN_PASSWORD_HASH') || define('ADMIN_PASSWORD_HASH', ''); // hash z password_hash() – má prednosť
+defined('SECRET') || define('SECRET', '');
 const TOKEN_HOURS = 12;
 
 header('Content-Type: application/json; charset=utf-8');
@@ -49,6 +52,8 @@ switch ($a) {
   case 'login':
     $pw = (string)(body()['password'] ?? '');
     usleep(400000); // spomalenie hádania hesla
+    if ((ADMIN_PASSWORD === '' && ADMIN_PASSWORD_HASH === '') || strlen(SECRET) < 16)
+      out(['ok' => false, 'error' => 'Heslo do administrácie nie je nastavené (chýba config.php).'], 503);
     $good = ADMIN_PASSWORD_HASH ? password_verify($pw, ADMIN_PASSWORD_HASH) : hash_equals(ADMIN_PASSWORD, $pw);
     if (!$good) out(['ok' => false, 'error' => 'Nesprávne heslo'], 403);
     out(['ok' => true, 'token' => makeToken()]);

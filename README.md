@@ -19,11 +19,21 @@ Magický web pre Lunu (produkcia Divadlo OSKAR): úvodná stránka, tabuľka ter
 - `.htaccess` – presmerovanie na https://www, kompresia, cache
 - Po spustení domény: pridaj web do Google Search Console a Bing Webmaster Tools a odošli `sitemap.xml`.
 
-## Nasadenie na hosting (napr. Websupport, bežný PHP hosting)
-1. Nahraj celý priečinok na hosting (PHP 7.4+).
-2. V `api.php` zmeň `ADMIN_PASSWORD` a `SECRET`.
+## Nasadenie na hosting (automaticky cez GitHub → FTP)
+Po každej zmene vo vetve `main` GitHub sám nahrá web na FTP (`.github/workflows/deploy.yml`).
+1. V GitHube otvor **Settings → Secrets and variables → Actions → New repository secret** a pridaj:
+   - `FTP_SERVER` – adresa FTP servera
+   - `FTP_USERNAME`, `FTP_PASSWORD` – prihlasovacie údaje FTP
+   - `FTP_DIR` – priečinok webu na serveri, napr. `/web/` (s lomkou na konci)
+   - `ADMIN_PASSWORD` – heslo do administrácie webu
+   - `LUNA_SECRET` – dlhý náhodný text (aspoň 16 znakov)
+   - nepovinne `FTP_PROTOCOL` – `ftp`, ak hosting nepodporuje šifrované `ftps`
+2. V záložke **Actions → Nahrať web na FTP → Run workflow** spusti prvé nahratie.
 3. Otvor `/admin.html`, prihlás sa, skontroluj obsah a klikni **Uložiť zmeny na web** – vytvorí sa `data/data.json`.
 4. Objednávky chodia na e-mail z Nastavení (funkcia `mail()` hostingu) a sú v admine v sekcii Objednávky.
+
+Heslo do adminu nie je v repozitári (je verejný) – GitHub ho pri nahrávaní zapíše do `config.php` na serveri.
+Priečinky `data/` a `uploads/` na serveri nahrávanie nemaže.
 
 ## Lokálny náhľad (bez PHP)
 Web funguje aj bez servera: obsah sa vtedy berie z ukážkových dát a úpravy v admine sa ukladajú len v prehliadači. Heslo v tomto režime: `luna2026`.

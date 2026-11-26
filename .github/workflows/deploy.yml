@@ -1,0 +1,64 @@
+# Nahratie webu na FTP hosting po každej zmene vo vetve main.
+# Potrebné tajomstvá (GitHub → Settings → Secrets and variables → Actions):
+#   FTP_SERVER     napr. ftp.dievcazobrazka.sk
+#   FTP_USERNAME   používateľ FTP
+#   FTP_PASSWORD   heslo FTP
+#   FTP_DIR        priečinok webu na serveri, napr. /web/ (koniec s lomkou)
+#   ADMIN_PASSWORD heslo do administrácie webu
+#   LUNA_SECRET    dlhý náhodný text (podpis prihlásenia do adminu)
+# Nepovinné: FTP_PROTOCOL (ftps | ftp, predvolene ftps)
+name: Nahrať web na FTP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+    steps:
+      - name: Kontrola nastavení
+        id: check
+        run: |
+          if [ -z "$FTP_SERVER" ]; then
+            echo "::notice::Chýba tajomstvo FTP_SERVER – nahrávanie preskočené."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.skip != 'true'
+
+      - name: Vytvoriť config.php s heslom do adminu
+        if: steps.check.outputs.skip != 'true'
+        env:
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          LUNA_SECRET: ${{ secrets.LUNA_SECRET }}
+        run: |
+          if [ -z "$ADMIN_PASSWORD" ]; then echo "::error::Chýba tajomstvo ADMIN_PASSWORD"; exit 1; fi
+          if [ ${#LUNA_SECRET} -lt 16 ]; then echo "::error::Tajomstvo LUNA_SECRET chýba alebo je kratšie ako 16 znakov"; exit 1; fi
+          php -r 'file_put_contents("config.php", "<?php\nconst ADMIN_PASSWORD = " . var_export(getenv("ADMIN_PASSWORD"), true) . ";\nconst SECRET = " . var_export(getenv("LUNA_SECRET"), true) . ";\n");'
+          php -l config.php
+          php -l api.php
+
+      - name: Nahrať na FTP
+        if: steps.check.outputs.skip != 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ secrets.FTP_PROTOCOL || 'ftps' }}
+          server-dir: ${{ secrets.FTP_DIR || './' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
+            **/.DS_Store

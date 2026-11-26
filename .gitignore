@@ -3,3 +3,5 @@
 data/
 uploads/*
 !uploads/.htaccess
+# heslo do adminu – vytvára ho GitHub pri nahrávaní, nepatrí do gitu
+config.php
