@@ -73,7 +73,8 @@
           ${s.address ? `<li>${e(s.address)}</li>` : ""}</ul></div>
         <div><h4>MENU</h4><ul>${navItems().slice(1).map(([h, t]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
       </div><p class="copyright">© ${new Date().getFullYear()} Luna · ${e(s.producer)} ·
-        <a href="ochrana-osobnych-udajov.html">Ochrana osobných údajov</a> · <a href="#" class="cookie-link">Nastavenia cookies</a></p>`;
+        <a href="obchodne-podmienky.html">Obchodné podmienky</a> · <a href="ochrana-osobnych-udajov.html">Ochrana osobných údajov</a> · <a href="#" class="cookie-link">Nastavenia cookies</a><br>
+        <small>Prevádzkovateľ: MAR-ART, s.r.o. (Divadlo OSKAR), Holíčska 3074/26, 851 05 Bratislava, IČO 56598661</small></p>`;
       document.body.append(f);
       f.querySelector(".cookie-link").onclick = (ev) => { ev.preventDefault(); window.LunaConsent && LunaConsent.open(true); };
     },

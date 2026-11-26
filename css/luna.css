@@ -673,3 +673,5 @@ html, body { overflow-x: clip; }
 .legal-table th, .legal-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #eee3cc; vertical-align: top; color: var(--ink); }
 .legal-table th { background: #f7ecd6; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
 @media (max-width: 600px) { .legal-table { font-size: 12.5px; } .legal-table th, .legal-table td { padding: 7px 8px; } }
+.legal-form { background: #fff; border: 1px dashed #d8c49c; border-radius: 12px; padding: 14px 18px; font-size: 14px; line-height: 1.9; color: var(--ink); margin: 10px 0 6px; }
+.site-footer small { opacity: .7; }
